@@ -67,8 +67,9 @@
                     <li class="nav-item {% if current_user.is_authenticated %}d-none{% endif %}">
                         <a class="nav-link {% if request.path == '/auth/login' %}active{% endif %}" href="/auth/login">Login</a>
                     </li>
-                    <li class="nav-item {% if current_user.is_authenticated %}d-none{% endif %}">
-                        <a class="nav-link {% if request.path == '/auth/register' %}active{% endif %}" href="/auth/register">Register</a>
+                    <li class="nav-item authenticated" style="display: none;">
+                        <div class="dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img src="" alt="" class="user-image rounded-circle me-1" style="width: 25px; height: 25px; display: none;">
                                 <span class="user-name">User</span>
                             </a>
