@@ -1,0 +1,120 @@
+/* Chatbot styles for WE Hub */
+
+.chatbot-window-embed {
+    position: relative;
+}
+
+.chatbot-messages-embed {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.25rem;
+    background-color: var(--bs-dark-bg-subtle);
+}
+
+.chatbot-message {
+    display: flex;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    max-width: 85%;
+}
+
+.bot-message {
+    align-self: flex-start;
+    background-color: var(--bs-tertiary-bg);
+    margin-right: auto;
+}
+
+.user-message {
+    align-self: flex-end;
+    background-color: var(--bs-primary-bg-subtle);
+    margin-left: auto;
+    justify-content: flex-end;
+}
+
+.message-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--bs-primary);
+    color: white;
+    margin-right: 0.5rem;
+}
+
+.user-message .message-avatar {
+    background-color: var(--bs-secondary);
+}
+
+.message-text {
+    background-color: var(--bs-body-bg);
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    position: relative;
+}
+
+.bot-message .message-text:before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 10px;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid var(--bs-body-bg);
+}
+
+.user-message .message-text {
+    text-align: right;
+}
+
+.typing-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
+}
+
+.typing-dots span {
+    width: 8px;
+    height: 8px;
+    margin: 0 2px;
+    background-color: var(--bs-secondary);
+    border-radius: 50%;
+    display: inline-block;
+    animation: typing 1.4s infinite both;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+}
+
+.ai-indicator {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.2rem;
+    font-size: 0.7rem;
+    background-color: rgba(13, 202, 240, 0.1);
+}

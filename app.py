@@ -49,6 +49,15 @@ firebase_app_id = os.environ.get("FIREBASE_APP_ID")
 
 logger.info(f"Firebase environment variables: PROJECT_ID: {firebase_project_id is not None}, API_KEY: {firebase_api_key is not None}, APP_ID: {firebase_app_id is not None}")
 
+# Initialize OpenAI API key
+openai_api_key = os.environ.get("OPENAI_API_KEY")
+# Add to app config for template access
+app.config["OPENAI_API_KEY"] = openai_api_key
+if openai_api_key:
+    logger.info("OpenAI API key found, AI-powered chatbot will be enabled")
+else:
+    logger.info("OpenAI API key not found, using basic chatbot responses")
+
 # We'll initialize Firebase Admin in a simpler way and with better error handling
 firestore_db = None
 bucket = None

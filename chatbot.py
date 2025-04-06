@@ -1,9 +1,13 @@
 import logging
+import os
 from flask import Blueprint, render_template, request, jsonify
 from flask_login import current_user
 import random
 
 chatbot_bp = Blueprint('chatbot', __name__, url_prefix='/chatbot')
+
+# Check if OpenAI is enabled
+OPENAI_ENABLED = os.environ.get("OPENAI_API_KEY") is not None
 
 # Predefined responses for the basic chatbot
 FAQ_RESPONSES = {
@@ -86,12 +90,35 @@ def chat():
         if not message:
             return jsonify({'success': False, 'message': 'No message provided.'}), 400
             
-        # Generate response
-        response = get_response(message)
+        # Generate response using OpenAI if available, otherwise use basic response
+        is_ai_response = False
+        if OPENAI_ENABLED:
+            try:
+                from services.openai_service import get_chatbot_response
+                
+                # Get user info if authenticated
+                user_info = None
+                if current_user.is_authenticated:
+                    user_info = {
+                        'name': current_user.full_name or current_user.username,
+                        'business_type': current_user.business_category,
+                        'joined_date': current_user.created_at.strftime('%Y-%m-%d') if current_user.created_at else 'Recently'
+                    }
+                
+                response = get_chatbot_response(message, user_info)
+                is_ai_response = True
+                logging.info("Using OpenAI for chatbot response")
+            except Exception as openai_error:
+                logging.error(f"Error using OpenAI: {openai_error}")
+                response = get_response(message)  # Fallback to basic responses
+                is_ai_response = False
+        else:
+            response = get_response(message)
         
         return jsonify({
             'success': True,
-            'response': response
+            'response': response,
+            'is_ai': is_ai_response
         }), 200
         
     except Exception as e:
