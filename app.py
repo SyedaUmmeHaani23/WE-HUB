@@ -69,7 +69,6 @@ logger.info("Importing routes")
 # Import routes
 try:
     from routes import auth, dashboard, profile, e_commerce, community, events, business_tools, api
-    from chatbot import chatbot_bp
     
     # Register blueprints
     logger.info("Registering blueprints")
@@ -81,7 +80,6 @@ try:
     app.register_blueprint(events.bp)
     app.register_blueprint(business_tools.bp)
     app.register_blueprint(api.bp)
-    app.register_blueprint(chatbot_bp)
     logger.info("All blueprints registered successfully")
 except Exception as e:
     logger.error(f"Error registering blueprints: {e}")
