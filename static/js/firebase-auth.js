@@ -16,15 +16,45 @@ import {
 // Firebase configuration will be injected from the server
 let firebaseConfig = {};
 try {
+  // Get configuration from hidden div
+  const configElement = document.getElementById('firebase-config');
+  
+  // Log the data attributes to help debug
+  console.log('Firebase config element found:', configElement !== null);
+  if (configElement) {
+    console.log('Firebase API Key:', configElement.getAttribute('data-api-key'));
+    console.log('Firebase Project ID:', configElement.getAttribute('data-project-id'));
+    console.log('Firebase App ID:', configElement.getAttribute('data-app-id'));
+  }
+  
   firebaseConfig = {
-    apiKey: document.getElementById('firebase-config').getAttribute('data-api-key'),
-    projectId: document.getElementById('firebase-config').getAttribute('data-project-id'),
-    appId: document.getElementById('firebase-config').getAttribute('data-app-id'),
-    authDomain: `${document.getElementById('firebase-config').getAttribute('data-project-id')}.firebaseapp.com`,
-    storageBucket: `${document.getElementById('firebase-config').getAttribute('data-project-id')}.appspot.com`,
+    apiKey: configElement.getAttribute('data-api-key'),
+    projectId: configElement.getAttribute('data-project-id'),
+    appId: configElement.getAttribute('data-app-id'),
+    authDomain: `${configElement.getAttribute('data-project-id')}.firebaseapp.com`,
+    storageBucket: `${configElement.getAttribute('data-project-id')}.appspot.com`,
   };
+  
+  // Validate the config
+  if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "undefined" || firebaseConfig.apiKey === "") {
+    throw new Error('Firebase API Key is missing or empty');
+  }
+  if (!firebaseConfig.projectId || firebaseConfig.projectId === "undefined" || firebaseConfig.projectId === "") {
+    throw new Error('Firebase Project ID is missing or empty');
+  }
+  if (!firebaseConfig.appId || firebaseConfig.appId === "undefined" || firebaseConfig.appId === "") {
+    throw new Error('Firebase App ID is missing or empty');
+  }
+  
+  console.log('Firebase config loaded successfully:', firebaseConfig);
 } catch (error) {
   console.error('Error loading Firebase config:', error);
+  // Display error in the UI
+  const errorContainer = document.getElementById('auth-error');
+  if (errorContainer) {
+    errorContainer.textContent = 'Firebase configuration error: ' + error.message;
+    errorContainer.style.display = 'block';
+  }
 }
 
 // Initialize Firebase
