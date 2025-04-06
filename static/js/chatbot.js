@@ -1,208 +1,302 @@
-// AI-powered chatbot for Women Entrepreneurs Hub
-document.addEventListener('DOMContentLoaded', () => {
-  const chatToggle = document.getElementById('chat-toggle');
-  const chatContainer = document.getElementById('chat-container');
-  const chatMessages = document.getElementById('chat-messages');
-  const chatForm = document.getElementById('chat-form');
-  const chatInput = document.getElementById('chat-input');
-  const chatClose = document.getElementById('chat-close');
-  
-  // Check if chat elements exist
-  if (!chatToggle || !chatContainer || !chatMessages || !chatForm || !chatInput) {
-    console.error('Chat elements not found');
-    return;
-  }
-  
-  // Toggle chat visibility
-  chatToggle.addEventListener('click', () => {
-    chatContainer.classList.toggle('d-none');
-    
-    // If opening the chat for the first time, show welcome message
-    if (!chatContainer.classList.contains('d-none') && chatMessages.children.length === 0) {
-      addBotMessage('Hello! 👋 I\'m your WE Hub assistant. How can I help you today?');
-      
-      // Add quick reply buttons for common questions
-      const quickReplies = document.createElement('div');
-      quickReplies.className = 'quick-replies mt-2';
-      
-      const commonQuestions = [
-        'How do I create a business profile?',
-        'How do I add products?',
-        'How do I register for events?',
-        'Tell me about payment options'
-      ];
-      
-      commonQuestions.forEach(question => {
-        const button = document.createElement('button');
-        button.className = 'btn btn-sm btn-outline-primary me-1 mb-1';
-        button.textContent = question;
-        button.addEventListener('click', () => {
-          addUserMessage(question);
-          handleUserMessage(question);
+/**
+ * Women Entrepreneurs Hub Chatbot
+ * Handles the interaction between the user and the chatbot
+ */
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize chatbot elements
+    const chatToggle = document.getElementById('chat-toggle');
+    const chatContainer = document.getElementById('chat-container');
+    const chatClose = document.getElementById('chat-close');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatMessages = document.getElementById('chat-messages');
+
+    // Check if elements exist
+    if (!chatToggle || !chatContainer || !chatClose || !chatForm || !chatInput || !chatMessages) {
+        console.error('Chatbot elements not found');
+        return;
+    }
+
+    // Toggle chatbot visibility
+    chatToggle.addEventListener('click', function() {
+        chatContainer.classList.toggle('d-none');
+        
+        // If this is the first time opening the chat, add a welcome message
+        if (chatMessages.children.length === 0) {
+            addMessage('assistant', 'Hello! I\'m WE Hub Assistant. How can I help you today?');
+        }
+        
+        // Focus on input
+        chatInput.focus();
+    });
+
+    // Close chatbot
+    chatClose.addEventListener('click', function() {
+        chatContainer.classList.add('d-none');
+    });
+
+    // Submit message
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const message = chatInput.value.trim();
+        if (!message) return;
+        
+        // Add user message
+        addMessage('user', message);
+        
+        // Clear input
+        chatInput.value = '';
+        
+        // Get response from bot
+        getChatbotResponse(message);
+    });
+
+    // Function to add a message to the chat
+    function addMessage(sender, message) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message', sender);
+        
+        const avatar = document.createElement('div');
+        avatar.classList.add('chat-avatar');
+        
+        if (sender === 'assistant') {
+            avatar.innerHTML = '<i class="fas fa-robot"></i>';
+        } else {
+            avatar.innerHTML = '<i class="fas fa-user"></i>';
+        }
+        
+        const content = document.createElement('div');
+        content.classList.add('chat-content');
+        content.innerText = message;
+        
+        messageElement.appendChild(avatar);
+        messageElement.appendChild(content);
+        
+        chatMessages.appendChild(messageElement);
+        
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Function to get a response from the chatbot
+    function getChatbotResponse(message) {
+        // Show typing indicator
+        const typingIndicator = document.createElement('div');
+        typingIndicator.classList.add('chat-message', 'assistant', 'typing-indicator');
+        
+        const avatar = document.createElement('div');
+        avatar.classList.add('chat-avatar');
+        avatar.innerHTML = '<i class="fas fa-robot"></i>';
+        
+        const content = document.createElement('div');
+        content.classList.add('chat-content');
+        content.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+        
+        typingIndicator.appendChild(avatar);
+        typingIndicator.appendChild(content);
+        
+        chatMessages.appendChild(typingIndicator);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // Send request to server
+        fetch('/chatbot/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: message })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Remove typing indicator
+            chatMessages.removeChild(typingIndicator);
+            
+            if (data.success) {
+                // Add response
+                addMessage('assistant', data.response);
+            } else {
+                // Add error message
+                addMessage('assistant', 'Sorry, I encountered an error. Please try again later.');
+            }
+        })
+        .catch(error => {
+            // Remove typing indicator
+            chatMessages.removeChild(typingIndicator);
+            
+            console.error('Error:', error);
+            addMessage('assistant', 'Sorry, I encountered an error. Please try again later.');
         });
-        quickReplies.appendChild(button);
-      });
-      
-      chatMessages.appendChild(quickReplies);
     }
-  });
-  
-  // Close chat
-  chatClose.addEventListener('click', () => {
-    chatContainer.classList.add('d-none');
-  });
-  
-  // Handle chat form submission
-  chatForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const message = chatInput.value.trim();
-    if (!message) return;
-    
-    // Add user message to chat
-    addUserMessage(message);
-    
-    // Clear input
-    chatInput.value = '';
-    
-    // Handle user message
-    handleUserMessage(message);
-  });
-  
-  // Add a bot message to the chat
-  function addBotMessage(message) {
-    const messageEl = document.createElement('div');
-    messageEl.className = 'message bot-message';
-    messageEl.innerHTML = `
-      <div class="message-avatar">
-        <i class="fa fa-robot"></i>
-      </div>
-      <div class="message-content">
-        ${message}
-      </div>
+});
+
+// Add custom CSS for chatbot
+document.addEventListener('DOMContentLoaded', function() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .chat-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--bs-primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            z-index: 1000;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .chat-toggle:hover {
+            transform: scale(1.1);
+            background-color: var(--bs-primary-hover, var(--bs-primary));
+        }
+
+        .chat-container {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            border-radius: 10px;
+            background-color: var(--bs-body-bg);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1000;
+            border: 1px solid var(--bs-border-color);
+        }
+
+        .chat-header {
+            background-color: var(--bs-primary);
+            padding: 15px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h5 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-message {
+            display: flex;
+            max-width: 85%;
+        }
+
+        .chat-message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .chat-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--bs-gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+        }
+
+        .chat-message.user .chat-avatar {
+            background-color: var(--bs-primary);
+            color: white;
+        }
+
+        .chat-content {
+            background-color: var(--bs-gray-200);
+            padding: 10px 15px;
+            border-radius: 18px;
+            color: var(--bs-gray-800);
+        }
+
+        .chat-message.user .chat-content {
+            background-color: var(--bs-primary);
+            color: white;
+        }
+
+        .chat-form {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid var(--bs-border-color);
+        }
+
+        .chat-form input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--bs-border-color);
+            border-radius: 20px;
+            margin-right: 10px;
+            background-color: var(--bs-body-bg);
+            color: var(--bs-body-color);
+        }
+
+        .chat-form button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--bs-primary);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .typing-indicator .chat-content {
+            display: flex;
+            align-items: center;
+            min-height: 24px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--bs-gray-500);
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typing 1.5s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-5px);
+            }
+        }
     `;
-    
-    chatMessages.appendChild(messageEl);
-    
-    // Scroll to bottom
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-  
-  // Add a user message to the chat
-  function addUserMessage(message) {
-    const messageEl = document.createElement('div');
-    messageEl.className = 'message user-message';
-    messageEl.innerHTML = `
-      <div class="message-content">
-        ${message}
-      </div>
-      <div class="message-avatar">
-        <i class="fa fa-user"></i>
-      </div>
-    `;
-    
-    chatMessages.appendChild(messageEl);
-    
-    // Scroll to bottom
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-  
-  // Handle user message and generate response
-  function handleUserMessage(message) {
-    // Show typing indicator
-    const typingIndicator = document.createElement('div');
-    typingIndicator.className = 'message bot-message typing-indicator';
-    typingIndicator.innerHTML = `
-      <div class="message-avatar">
-        <i class="fa fa-robot"></i>
-      </div>
-      <div class="message-content">
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-      </div>
-    `;
-    
-    chatMessages.appendChild(typingIndicator);
-    
-    // Scroll to bottom
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    
-    // Process the message using our simple rule-based system
-    // In a real implementation, this would be replaced with Dialogflow or another NLP service
-    setTimeout(() => {
-      // Remove typing indicator
-      chatMessages.removeChild(typingIndicator);
-      
-      // Get response based on message content
-      const response = generateResponse(message.toLowerCase());
-      
-      // Add bot response
-      addBotMessage(response);
-    }, 1000);
-  }
-  
-  // Generate response based on user input
-  function generateResponse(message) {
-    // Simple keyword-based response generation
-    // In a real implementation, this would use Dialogflow or another NLP service
-    
-    // Check for greetings
-    if (message.match(/hello|hi|hey|greetings/i)) {
-      return 'Hello! How can I assist you today?';
-    }
-    
-    // Check for thanks
-    if (message.match(/thank you|thanks|thx/i)) {
-      return 'You\'re welcome! Is there anything else I can help you with?';
-    }
-    
-    // Check for business profile questions
-    if (message.match(/business profile|create profile|update profile|edit profile/i)) {
-      return 'To create or update your business profile, go to your Dashboard and click on "Profile" in the sidebar. From there, you can add your business details, logo, and connect with Google My Business.';
-    }
-    
-    // Check for product related questions
-    if (message.match(/product|add product|sell product|listing/i)) {
-      return 'To add products, go to the E-commerce section from your Dashboard and click "Add New Product". Fill in the details, add images, set your price, and publish. Your products will then be visible in your shop!';
-    }
-    
-    // Check for payment related questions
-    if (message.match(/payment|google pay|pay|transaction|pricing|fees/i)) {
-      return 'We support Google Pay for secure transactions. The standard transaction fee is 2.9% + $0.30 per transaction. To set up payments, go to Settings > Payment Methods from your Dashboard.';
-    }
-    
-    // Check for event related questions
-    if (message.match(/event|workshop|register|signup|join event/i)) {
-      return 'You can browse upcoming events in the Community section. To register for an event, simply click the "Register Now" button on the event page. You\'ll receive a confirmation email with event details.';
-    }
-    
-    // Check for community related questions
-    if (message.match(/community|forum|post|comment|discussion/i)) {
-      return 'Our community forum is a great place to connect with other women entrepreneurs. You can start discussions, ask questions, and share your expertise. Head to the Community section to get started!';
-    }
-    
-    // Check for marketing related questions
-    if (message.match(/marketing|advertise|promote|ad campaign|google ads/i)) {
-      return 'In the Marketing Tools section, you can create and manage Google Ad campaigns, track analytics, and optimize your SEO. We provide templates and guides to help you get started with your marketing efforts.';
-    }
-    
-    // Check for analytics related questions
-    if (message.match(/analytics|stats|metrics|data|performance|track/i)) {
-      return 'Your business analytics are available in the Dashboard. You can view sales trends, customer demographics, and marketing performance. Data is updated in real-time to help you make informed decisions.';
-    }
-    
-    // Check for mentorship related questions
-    if (message.match(/mentor|mentorship|advice|guidance|coach/i)) {
-      return 'We offer mentorship programs connecting you with experienced entrepreneurs. Check the "Mentorship" tab in the Community section to browse available mentors and request mentoring sessions.';
-    }
-    
-    // Check for help or support
-    if (message.match(/help|support|contact|assistance/i)) {
-      return 'For additional support, you can email us at support@wehub.com or use the Help Center accessible from the footer of any page. Our support team is available Monday-Friday, 9 AM - 5 PM EST.';
-    }
-    
-    // Default response for unrecognized queries
-    return 'I\'m not sure I understand. Could you rephrase your question? You can ask me about creating a business profile, adding products, payments, events, or community features.';
-  }
+    document.head.appendChild(style);
 });
