@@ -6,6 +6,7 @@ import sys
 import logging
 from flask import Flask, render_template, session, redirect, url_for, g, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, current_user
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -41,6 +42,23 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 logger.info("Initializing database")
 # Initialize database
 db.init_app(app)
+
+# Initialize Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'auth.login'
+login_manager.login_message = 'Please log in to access this page.'
+login_manager.login_message_category = 'info'
+
+@login_manager.user_loader
+def load_user(user_id):
+    """Load user from database."""
+    try:
+        from models import User
+        return User.query.get(int(user_id))
+    except Exception as e:
+        logger.error(f"Error loading user: {e}")
+        return None
 
 # Initialize Firebase variables
 firebase_project_id = os.environ.get("FIREBASE_PROJECT_ID")
@@ -165,5 +183,6 @@ def health_check():
 @app.context_processor
 def inject_user():
     """Inject user data into templates."""
+    from flask_login import current_user
     user_data = session.get('user_data')
-    return dict(user_data=user_data)
+    return dict(user_data=user_data, current_user=current_user)

@@ -94,7 +94,10 @@ def chat():
         is_ai_response = False
         if OPENAI_ENABLED:
             try:
-                from services.openai_service import get_chatbot_response
+                from services.openai_service import OpenAIService
+                
+                # Initialize OpenAI service
+                openai_service = OpenAIService()
                 
                 # Get user info if authenticated
                 user_info = None
@@ -105,7 +108,7 @@ def chat():
                         'joined_date': current_user.created_at.strftime('%Y-%m-%d') if current_user.created_at else 'Recently'
                     }
                 
-                response = get_chatbot_response(message, user_info)
+                response = openai_service.generate_response(message, user_info)
                 is_ai_response = True
                 logging.info("Using OpenAI for chatbot response")
             except Exception as openai_error:

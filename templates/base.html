@@ -19,8 +19,6 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
-    
     <!-- Chart.js for data visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -51,41 +49,40 @@
                     <li class="nav-item">
                         <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">Home</a>
                     </li>
-                    <li class="nav-item authenticated" style="display: none;">
-                        <a class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" href="/dashboard">Dashboard</a>
+                    <li class="nav-item {% if not current_user.is_authenticated %}d-none{% endif %}">
+                        <a class="nav-link {% if request.path == '/dashboard/analytics' %}active{% endif %}" href="/dashboard/analytics">Dashboard</a>
                     </li>
-                    <li class="nav-item authenticated" style="display: none;">
-                        <a class="nav-link {% if request.path == '/e-commerce' %}active{% endif %}" href="/e-commerce">E-Commerce</a>
+                    <li class="nav-item {% if not current_user.is_authenticated %}d-none{% endif %}">
+                        <a class="nav-link {% if request.path == '/shop' %}active{% endif %}" href="/e-commerce">E-Commerce</a>
                     </li>
-                    <li class="nav-item authenticated" style="display: none;">
-                        <a class="nav-link {% if request.path == '/community' %}active{% endif %}" href="/community">Community</a>
+                    <li class="nav-item {% if not current_user.is_authenticated %}d-none{% endif %}">
+                        <a class="nav-link {% if request.path == '/community/forum' %}active{% endif %}" href="/community/forum">Community</a>
                     </li>
-                    <li class="nav-item authenticated" style="display: none;">
-                        <a class="nav-link {% if request.path == '/events' %}active{% endif %}" href="/events">Events</a>
+                    <li class="nav-item {% if not current_user.is_authenticated %}d-none{% endif %}">
+                        <a class="nav-link {% if request.path == '/events/upcoming' %}active{% endif %}" href="/events/upcoming">Events</a>
                     </li>
-                    <li class="nav-item authenticated" style="display: none;">
-                        <a class="nav-link {% if request.path == '/business-tools' %}active{% endif %}" href="/business-tools">Business Tools</a>
+                    <li class="nav-item {% if not current_user.is_authenticated %}d-none{% endif %}">
+                        <a class="nav-link {% if request.path == '/tools' %}active{% endif %}" href="/tools">Business Tools</a>
                     </li>
-                    <li class="nav-item unauthenticated">
-                        <a class="nav-link {% if request.path == '/login' %}active{% endif %}" href="/login">Login</a>
+                    <li class="nav-item {% if current_user.is_authenticated %}d-none{% endif %}">
+                        <a class="nav-link {% if request.path == '/auth/login' %}active{% endif %}" href="/auth/login">Login</a>
                     </li>
-                    <li class="nav-item authenticated" style="display: none;">
-                        <div class="dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <li class="nav-item {% if current_user.is_authenticated %}d-none{% endif %}">
+                        <a class="nav-link {% if request.path == '/auth/register' %}active{% endif %}" href="/auth/register">Register</a>
                                 <img src="" alt="" class="user-image rounded-circle me-1" style="width: 25px; height: 25px; display: none;">
                                 <span class="user-name">User</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>My Profile</a></li>
-                                <li><a class="dropdown-item" href="/e-commerce/my-products"><i class="fas fa-box me-2"></i>My Products</a></li>
-                                <li><a class="dropdown-item" href="/e-commerce/orders"><i class="fas fa-shopping-bag me-2"></i>My Orders</a></li>
+                                <li><a class="dropdown-item" href="/shop/my-products"><i class="fas fa-box me-2"></i>My Products</a></li>
+                                <li><a class="dropdown-item" href="/shop/orders"><i class="fas fa-shopping-bag me-2"></i>My Orders</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="#" onclick="window.signOutUser()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                             </ul>
                         </div>
                     </li>
                     <li class="nav-item authenticated" style="display: none;">
-                        <a class="nav-link position-relative" href="/e-commerce/cart">
+                        <a class="nav-link position-relative" href="/shop/cart">
                             <i class="fas fa-shopping-cart"></i>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-count" style="display: none;">
                                 0
@@ -123,20 +120,20 @@
                     <h5>Quick Links</h5>
                     <ul class="list-unstyled">
                         <li><a href="/">Home</a></li>
-                        <li><a href="/dashboard">Dashboard</a></li>
+                        <li><a href="/dashboard/analytics">Dashboard</a></li>
                         <li><a href="/e-commerce">E-Commerce</a></li>
-                        <li><a href="/community">Community</a></li>
-                        <li><a href="/events">Events</a></li>
+                        <li><a href="/community/forum">Community</a></li>
+                        <li><a href="/events/upcoming">Events</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-2 col-md-4 mb-4">
                     <h5>Resources</h5>
                     <ul class="list-unstyled">
-                        <li><a href="/business-tools">Business Tools</a></li>
-                        <li><a href="/business-tools/marketing">Marketing</a></li>
-                        <li><a href="/business-tools/analytics">Analytics</a></li>
-                        <li><a href="/community/mentorship">Mentorship</a></li>
-                        <li><a href="/community/forum">Forum</a></li>
+                        <li><a href="/tools">Business Tools</a></li>
+                        <li><a href="/tools/marketing">Marketing</a></li>
+                        <li><a href="/tools/analytics">Analytics</a></li>
+                        <li><a href="/community/forum/mentorship">Mentorship</a></li>
+                        <li><a href="/community/forum/forum">Forum</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-4 col-md-4 mb-4">

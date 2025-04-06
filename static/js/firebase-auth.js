@@ -16,13 +16,30 @@ import {
 // Firebase configuration will be injected from the server
 let firebaseConfig = {};
 try {
-  firebaseConfig = {
-    apiKey: document.getElementById('firebase-config').getAttribute('data-api-key'),
-    projectId: document.getElementById('firebase-config').getAttribute('data-project-id'),
-    appId: document.getElementById('firebase-config').getAttribute('data-app-id'),
-    authDomain: `${document.getElementById('firebase-config').getAttribute('data-project-id')}.firebaseapp.com`,
-    storageBucket: `${document.getElementById('firebase-config').getAttribute('data-project-id')}.appspot.com`,
-  };
+  const configElement = document.getElementById('firebase-config');
+  console.log('Firebase config element found:', configElement);
+  
+  if (configElement) {
+    const apiKey = configElement.getAttribute('data-api-key');
+    const projectId = configElement.getAttribute('data-project-id');
+    const appId = configElement.getAttribute('data-app-id');
+    
+    console.log('Firebase config values:', { 
+      apiKey: apiKey || 'not found',
+      projectId: projectId || 'not found',
+      appId: appId || 'not found'
+    });
+    
+    firebaseConfig = {
+      apiKey: apiKey,
+      projectId: projectId,
+      appId: appId,
+      authDomain: `${projectId}.firebaseapp.com`,
+      storageBucket: `${projectId}.appspot.com`,
+    };
+  } else {
+    console.error('Firebase config element not found in the DOM');
+  }
 } catch (error) {
   console.error('Error loading Firebase config:', error);
 }

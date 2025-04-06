@@ -22,67 +22,137 @@ ecommerce_bp = Blueprint('ecommerce', __name__, url_prefix='/shop')
 def shop():
     """Main shop page displaying all products"""
     try:
-        # Get all products from Firestore
+        # Get all products from local SQLAlchemy db
         products = []
-        if db:
-            product_docs = db.collection('products').where('in_stock', '==', True).stream()
-            
-            for doc in product_docs:
-                product_data = doc.to_dict()
+        try:
+            # First, try to get products from SQLAlchemy
+            from models import Product as DBProduct
+            all_products = DBProduct.query.filter_by(is_available=True).all()
+            for product in all_products:
                 products.append({
-                    'id': doc.id,
-                    'name': product_data.get('name'),
-                    'description': product_data.get('description'),
-                    'price': product_data.get('price'),
-                    'category': product_data.get('category'),
-                    'images': product_data.get('images', []),
-                    'user_id': product_data.get('user_id')
+                    'id': product.id,
+                    'name': product.name,
+                    'description': product.description,
+                    'price': product.price,
+                    'category': product.category,
+                    'images': [product.image_url] if product.image_url else [],
+                    'user_id': product.user_id
                 })
+        except Exception as db_err:
+            logging.error(f"Error fetching from SQLAlchemy: {db_err}")
+            # Fallback to Firestore if needed
+            if db:
+                try:
+                    product_docs = db.collection('products').where('in_stock', '==', True).stream()
+                    
+                    for doc in product_docs:
+                        product_data = doc.to_dict()
+                        products.append({
+                            'id': doc.id,
+                            'name': product_data.get('name'),
+                            'description': product_data.get('description'),
+                            'price': product_data.get('price'),
+                            'category': product_data.get('category'),
+                            'images': product_data.get('images', []),
+                            'user_id': product_data.get('user_id')
+                        })
+                    
+                    # Get seller information for each product
+                    for product in products:
+                        seller_doc = db.collection('users').document(product['user_id']).get()
+                        if seller_doc.exists:
+                            seller_data = seller_doc.to_dict()
+                            product['seller'] = {
+                                'name': seller_data.get('business_data', {}).get('name') or seller_data.get('display_name'),
+                                'photo': seller_data.get('photo_url')
+                            }
+                except Exception as fs_err:
+                    logging.error(f"Error fetching from Firestore: {fs_err}")
                 
-            # Get seller information for each product
-            for product in products:
-                seller_doc = db.collection('users').document(product['user_id']).get()
-                if seller_doc.exists:
-                    seller_data = seller_doc.to_dict()
-                    product['seller'] = {
-                        'name': seller_data.get('business_data', {}).get('name') or seller_data.get('display_name'),
-                        'photo': seller_data.get('photo_url')
-                    }
-                
-        return render_template('ecommerce/shop.html', products=products)
+        # Pass current_user to the template
+        from flask_login import current_user
+        return render_template('ecommerce/shop.html', products=products, current_user=current_user)
     
     except Exception as e:
         logging.error(f"Error loading shop: {e}")
         flash("Error loading shop. Please try again later.", "danger")
-        return render_template('ecommerce/shop.html', products=[])
+        # Pass current_user to the template
+        from flask_login import current_user
+        return render_template('ecommerce/shop.html', products=[], current_user=current_user)
 
 @ecommerce_bp.route('/product/<product_id>')
 def product_detail(product_id):
     """Product detail page"""
     try:
-        product = Product.get(product_id)
-        if not product:
+        # First try to get product from SQLAlchemy database
+        try:
+            from models import Product as DBProduct
+            product = DBProduct.query.get(product_id)
+            if product:
+                product_data = {
+                    'id': product.id,
+                    'name': product.name,
+                    'description': product.description,
+                    'price': product.price,
+                    'category': product.category,
+                    'images': [product.image_url] if product.image_url else [],
+                    'user_id': product.user_id
+                }
+                # Get seller information
+                from models import User
+                seller = User.query.get(product.user_id)
+                if seller:
+                    seller_info = {
+                        'id': seller.id,
+                        'name': seller.business_name or seller.full_name or seller.username,
+                        'photo': seller.profile_picture,
+                        'business': {
+                            'name': seller.business_name,
+                            'description': seller.business_description
+                        }
+                    }
+                else:
+                    seller_info = None
+                
+                # Pass current_user to the template
+                from flask_login import current_user
+                return render_template('ecommerce/product.html', product=product_data, seller=seller_info, current_user=current_user)
+        except Exception as db_err:
+            logging.error(f"Error fetching product from SQLAlchemy: {db_err}")
+        
+        # Otherwise fall back to Firestore
+        try:
+            product = Product.get(product_id)
+            if not product:
+                flash("Product not found.", "warning")
+                return redirect(url_for('ecommerce.shop'))
+                
+            # Get seller information
+            seller = None
+            if db:
+                seller_doc = db.collection('users').document(product.user_id).get()
+                if seller_doc.exists:
+                    seller_data = seller_doc.to_dict()
+                    seller = {
+                        'id': product.user_id,
+                        'name': seller_data.get('business_data', {}).get('name') or seller_data.get('display_name'),
+                        'photo': seller_data.get('photo_url'),
+                        'business': seller_data.get('business_data', {})
+                    }
+            
+            # Pass current_user to the template
+            from flask_login import current_user
+            return render_template('ecommerce/product.html', product=product, seller=seller, current_user=current_user)
+        except Exception as fs_err:
+            logging.error(f"Error fetching product from Firestore: {fs_err}")
             flash("Product not found.", "warning")
             return redirect(url_for('ecommerce.shop'))
-            
-        # Get seller information
-        seller = None
-        if db:
-            seller_doc = db.collection('users').document(product.user_id).get()
-            if seller_doc.exists:
-                seller_data = seller_doc.to_dict()
-                seller = {
-                    'id': product.user_id,
-                    'name': seller_data.get('business_data', {}).get('name') or seller_data.get('display_name'),
-                    'photo': seller_data.get('photo_url'),
-                    'business': seller_data.get('business_data', {})
-                }
-                
-        return render_template('ecommerce/product.html', product=product, seller=seller)
     
     except Exception as e:
         logging.error(f"Error loading product details: {e}")
         flash("Error loading product details. Please try again later.", "danger")
+        # Pass current_user to the template
+        from flask_login import current_user
         return redirect(url_for('ecommerce.shop'))
 
 @ecommerce_bp.route('/cart')

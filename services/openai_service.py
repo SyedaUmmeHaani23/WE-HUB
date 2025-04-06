@@ -1,6 +1,6 @@
 """
 OpenAI service for Women Entrepreneurs Hub.
-Provides chatbot functionality using OpenAI's GPT models.
+Provides integration with OpenAI's models for chatbot and other AI features.
 """
 import os
 import json
@@ -9,81 +9,115 @@ from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 
-# Initialize OpenAI client
-client = None
-try:
-    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-    if OPENAI_API_KEY:
-        client = OpenAI(api_key=OPENAI_API_KEY)
-        logger.info("OpenAI client initialized successfully")
-    else:
-        logger.warning("OPENAI_API_KEY not found in environment variables")
-except Exception as e:
-    logger.error(f"Error initializing OpenAI client: {e}")
-
-def get_chatbot_response(message, user_info=None):
-    """
-    Get a response from the OpenAI chatbot.
+class OpenAIService:
+    """Service class for interacting with OpenAI API."""
     
-    Args:
-        message (str): The message from the user
-        user_info (dict, optional): Information about the user for context
+    def __init__(self):
+        """Initialize the OpenAI service with API key from environment."""
+        self.api_key = os.environ.get("OPENAI_API_KEY")
+        self.client = None
         
-    Returns:
-        str: The response from the chatbot
-    """
-    # If OpenAI is not available, fall back to predefined responses
-    if not client or not OPENAI_API_KEY:
-        from chatbot import get_response
-        return get_response(message)
+        if self.api_key:
+            try:
+                self.client = OpenAI(api_key=self.api_key)
+                logger.info("OpenAI service initialized successfully")
+            except Exception as e:
+                logger.error(f"Error initializing OpenAI client: {e}")
+        else:
+            logger.warning("OpenAI API key not found, service will use fallback responses")
     
-    try:
-        # Create system message with context about WE Hub
-        system_message = """
-        You are an AI assistant for the Women Entrepreneurs Hub (WE Hub), a platform designed to help women 
-        entrepreneurs grow their businesses. You assist users with questions about e-commerce, 
-        marketing tools, community features, business analytics, and platform usage.
-        
-        Be helpful, concise, and focused on empowering women entrepreneurs. Provide practical advice 
-        and guide them to the right features in the platform.
-        
-        Platform features include:
-        1. E-commerce: Product listing, management, and sales
-        2. Marketing & Visibility: Tools for online presence and campaigns
-        3. Community & Networking: Forums, events, and mentorship
-        4. Data & Insights: Business analytics dashboard
-        5. Account management: Profile settings and preferences
-        
-        Always maintain a positive, encouraging tone. If you don't know an answer, suggest where 
-        they might find help within the platform instead of making up information.
+    def generate_response(self, message, user_data=None, context=None):
         """
+        Generate a response for the chatbot using OpenAI's models.
         
-        # Add user context if available
-        if user_info:
-            user_context = f"""
-            Some context about this user:
-            - Name: {user_info.get('name', 'Unknown')}
-            - Business Type: {user_info.get('business_type', 'Unknown')}
-            - Joined: {user_info.get('joined_date', 'Recently')}
-            """
-            system_message += user_context
+        Args:
+            message (str): The user's message to respond to
+            user_data (dict, optional): User data for personalization
+            context (list, optional): Previous conversation history
+            
+        Returns:
+            str: The generated response
+        """
+        if not self.client:
+            return self._fallback_response(message)
         
-        # the newest OpenAI model is "gpt-4o" which was released May 13, 2024.
-        # do not change this unless explicitly requested by the user
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": system_message},
-                {"role": "user", "content": message}
-            ],
-            max_tokens=300,
-            temperature=0.7
-        )
+        try:
+            # Create a system message with information about WE Hub
+            system_message = """You are the Women Entrepreneurs Hub (WE Hub) assistant. 
+            You provide helpful, supportive, and informative responses to women entrepreneurs. 
+            Your goal is to assist them with business questions, platform navigation, and accessing resources.
+            Keep your responses concise, friendly, and empowering. Use a supportive and encouraging tone.
+            Focus on practical advice, platform features, and resources available through WE Hub."""
+            
+            # Add user context if available
+            if user_data:
+                system_message += f"\n\nUser information: {json.dumps(user_data)}"
+            
+            # Create messages array
+            messages = [{"role": "system", "content": system_message}]
+            
+            # Add conversation history if available
+            if context:
+                for item in context:
+                    messages.append(item)
+            
+            # Add the user's current message
+            messages.append({"role": "user", "content": message})
+            
+            # Call the OpenAI API
+            # the newest OpenAI model is "gpt-4o" which was released May 13, 2024.
+            # do not change this unless explicitly requested by the user
+            response = self.client.chat.completions.create(
+                model="gpt-4o",
+                messages=messages,
+                max_tokens=500,
+                temperature=0.7,
+            )
+            
+            return response.choices[0].message.content
+        except Exception as e:
+            logger.error(f"Error generating OpenAI response: {e}")
+            return self._fallback_response(message)
+    
+    def _fallback_response(self, message):
+        """
+        Provide a fallback response when OpenAI is unavailable.
         
-        return response.choices[0].message.content
+        Args:
+            message (str): The user's message
+            
+        Returns:
+            str: A fallback response
+        """
+        # Basic response logic based on keywords in the message
+        message_lower = message.lower()
         
-    except Exception as e:
-        logger.error(f"Error getting OpenAI response: {e}")
-        # Fall back to predefined responses if OpenAI fails
-        from chatbot import get_response
-        return get_response(message)
+        if any(word in message_lower for word in ['hello', 'hi', 'hey', 'greetings']):
+            return "Hello! I'm the WE Hub assistant. How can I help you today?"
+        
+        elif any(word in message_lower for word in ['bye', 'goodbye', 'see you']):
+            return "Goodbye! Feel free to reach out if you need assistance in the future."
+            
+        elif any(word in message_lower for word in ['thank', 'thanks', 'appreciate']):
+            return "You're welcome! I'm here to help women entrepreneurs like you succeed."
+            
+        elif any(word in message_lower for word in ['login', 'sign in', 'account']):
+            return "To log in, click the 'Login' button in the top right corner. You can sign in with Google or use your email and password."
+            
+        elif any(word in message_lower for word in ['product', 'sell', 'store', 'shop']):
+            return "You can list your products through our e-commerce platform. Go to 'E-Commerce' in the navigation menu and click 'Add Product'."
+            
+        elif any(word in message_lower for word in ['event', 'workshop', 'webinar']):
+            return "Check out our 'Events' section to find upcoming workshops and networking opportunities. You can also create your own events for the community."
+            
+        elif any(word in message_lower for word in ['community', 'forum', 'connect']):
+            return "Our 'Community' section offers forums to connect with other women entrepreneurs, share experiences, and seek advice."
+            
+        elif any(word in message_lower for word in ['analytics', 'data', 'stats', 'performance']):
+            return "The 'Dashboard' provides analytics on your business performance, customer demographics, and sales trends to help you make informed decisions."
+            
+        elif any(word in message_lower for word in ['marketing', 'promote', 'advertise']):
+            return "Explore our 'Business Tools' section for marketing resources, SEO optimization tips, and Google Analytics integration."
+            
+        else:
+            return "I'm here to help with your business journey. Could you please provide more details about what you're looking for?"
