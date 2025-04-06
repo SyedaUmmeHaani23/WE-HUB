@@ -1,0 +1,374 @@
+{% extends 'base.html' %}
+
+{% block title %}Business Tools - Women Entrepreneurs Hub{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h1 class="fw-bold">Business Tools</h1>
+                <p class="lead">Powerful tools to help grow and manage your business</p>
+            </div>
+        </div>
+        
+        <!-- Business Tools Categories -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <ul class="nav nav-pills nav-justified mb-4" id="businessToolsTabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="marketing-tab" data-bs-toggle="pill" href="#marketing">
+                            <i class="fas fa-bullhorn me-2"></i> Marketing
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="analytics-tab" data-bs-toggle="pill" href="#analytics">
+                            <i class="fas fa-chart-bar me-2"></i> Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="seo-tab" data-bs-toggle="pill" href="#seo">
+                            <i class="fas fa-search me-2"></i> SEO
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="integration-tab" data-bs-toggle="pill" href="#integration">
+                            <i class="fas fa-plug me-2"></i> Integrations
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Tools Content -->
+        <div class="tab-content" id="businessToolsContent">
+            <!-- Marketing Tools -->
+            <div class="tab-pane fade show active" id="marketing">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Google Ads Integration</h4>
+                                <p class="card-text">Create and manage Google Ad campaigns to reach more customers. Track performance and optimize your marketing budget.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/marketing/google-ads" class="btn btn-we-primary stretched-link">Set Up Google Ads</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Social Media Management</h4>
+                                <p class="card-text">Schedule and manage your social media posts across multiple platforms. Create engaging content and track engagement.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/marketing/social-media" class="btn btn-we-primary stretched-link">Manage Social Media</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Email Marketing</h4>
+                                <p class="card-text">Create professional email campaigns to connect with your customers. Build mailing lists and track open rates.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/marketing/email" class="btn btn-we-primary stretched-link">Launch Email Campaign</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Content Marketing</h4>
+                                <p class="card-text">Plan and create content that attracts and engages your target audience. Develop a content calendar and strategy.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/marketing/content" class="btn btn-we-primary stretched-link">Content Marketing</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Analytics Tools -->
+            <div class="tab-pane fade" id="analytics">
+                <div class="row g-4">
+                    <div class="col-12 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title mb-4">Business Performance Overview</h4>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <canvas id="analytics-overview-chart" height="250"></canvas>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-4">
+                                            <h5 class="text-center">Traffic Sources</h5>
+                                            <canvas id="traffic-sources-chart" height="200"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Google Analytics</h4>
+                                <p class="card-text">Connect with Google Analytics to track website performance, customer behavior, and optimize conversion.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/analytics/google-analytics" class="btn btn-we-primary stretched-link">Set Up Google Analytics</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Customer Demographics</h4>
+                                <p class="card-text">Analyze your customer base by age, location, interests, and purchasing behavior to tailor your marketing efforts.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/analytics/demographics" class="btn btn-we-primary stretched-link">View Demographics</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Sales Analytics</h4>
+                                <p class="card-text">Track your sales performance, identify trends, and analyze product popularity to optimize your inventory.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/analytics/sales" class="btn btn-we-primary stretched-link">Sales Analytics</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Custom Reports</h4>
+                                <p class="card-text">Create customized reports for different aspects of your business. Export data for further analysis.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/analytics/reports" class="btn btn-we-primary stretched-link">Create Reports</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SEO Tools -->
+            <div class="tab-pane fade" id="seo">
+                <div class="row g-4">
+                    <div class="col-md-12 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title mb-3">SEO Health Check</h4>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i> Connect your website to perform a comprehensive SEO analysis.
+                                </div>
+                                <form class="row g-3">
+                                    <div class="col-md-8">
+                                        <input type="url" class="form-control" id="website-url" placeholder="https://yourbusiness.com">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn btn-we-primary w-100">Analyze Website</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Keyword Research</h4>
+                                <p class="card-text">Find the best keywords for your business to improve your search engine rankings and attract more customers.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/seo/keywords" class="btn btn-we-primary stretched-link">Research Keywords</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Search Console Integration</h4>
+                                <p class="card-text">Connect with Google Search Console to monitor and optimize your website's presence in Google search results.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/seo/search-console" class="btn btn-we-primary stretched-link">Set Up Search Console</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Backlink Analysis</h4>
+                                <p class="card-text">Analyze your backlink profile to identify opportunities for improving your website's authority and rankings.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/seo/backlinks" class="btn btn-we-primary stretched-link">Analyze Backlinks</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Local SEO</h4>
+                                <p class="card-text">Optimize your business for local search to attract more customers in your area. Improve your Google Maps presence.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/seo/local" class="btn btn-we-primary stretched-link">Local SEO Tools</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Integrations -->
+            <div class="tab-pane fade" id="integration">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Google My Business</h4>
+                                <p class="card-text">Connect your Google My Business account to improve your online visibility and manage your business information.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/integration/google-my-business" class="btn btn-we-primary stretched-link">Connect GMB</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Google Workspace</h4>
+                                <p class="card-text">Integrate with Google Workspace for email, calendar, and document management for your business.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/integration/google-workspace" class="btn btn-we-primary stretched-link">Set Up Workspace</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Payment Gateways</h4>
+                                <p class="card-text">Connect with various payment gateways to offer multiple payment options to your customers.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/integration/payments" class="btn btn-we-primary stretched-link">Payment Options</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Shipping Providers</h4>
+                                <p class="card-text">Connect with shipping providers to streamline your order fulfillment process and provide tracking information.</p>
+                                <div class="d-grid">
+                                    <a href="/business-tools/integration/shipping" class="btn btn-we-primary stretched-link">Shipping Setup</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize charts for analytics tab
+    const overviewCtx = document.getElementById('analytics-overview-chart');
+    const trafficCtx = document.getElementById('traffic-sources-chart');
+    
+    // Only initialize charts when the analytics tab is shown
+    const analyticsTab = document.getElementById('analytics-tab');
+    analyticsTab.addEventListener('shown.bs.tab', function() {
+        if (overviewCtx) {
+            const overviewChart = new Chart(overviewCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Sales',
+                        data: [12, 19, 14, 15, 22, 23],
+                        borderColor: '#8e44ad',
+                        backgroundColor: 'rgba(142, 68, 173, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Visitors',
+                        data: [18, 27, 24, 28, 32, 30],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Business Performance'
+                        }
+                    }
+                }
+            });
+        }
+        
+        if (trafficCtx) {
+            const trafficChart = new Chart(trafficCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Organic', 'Direct', 'Social', 'Referral'],
+                    datasets: [{
+                        data: [45, 25, 20, 10],
+                        backgroundColor: [
+                            '#8e44ad',
+                            '#2ecc71',
+                            '#3498db',
+                            '#e74c3c'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

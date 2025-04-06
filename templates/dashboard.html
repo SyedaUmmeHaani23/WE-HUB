@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Women Entrepreneurs Hub{% endblock %}
+
+{% block extra_head %}
+<!-- Load Google Maps API -->
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places"></script>
+{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h1 class="fw-bold">Dashboard</h1>
+                <p class="lead">Welcome back, <span class="user-name">Entrepreneur</span>!</p>
+            </div>
+            <div class="d-none d-md-block">
+                <button class="btn btn-outline-primary me-2">
+                    <i class="fas fa-download me-1"></i> Export Data
+                </button>
+                <a href="/e-commerce/add-product" class="btn btn-we-primary">
+                    <i class="fas fa-plus me-1"></i> Add New Product
+                </a>
+            </div>
+        </div>
+        
+        <!-- Stats Overview -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="stats-value" id="total-sales">$0</div>
+                            <div class="stats-label">Total Sales</div>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="stats-value" id="total-orders">0</div>
+                            <div class="stats-label">Total Orders</div>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="stats-value" id="total-products">0</div>
+                            <div class="stats-label">Active Products</div>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="stats-value" id="avg-order-value">$0</div>
+                            <div class="stats-label">Avg. Order Value</div>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Dashboard Content -->
+        <div class="row g-4">
+            <!-- Left Column - Sales & Products -->
+            <div class="col-lg-8">
+                <!-- Sales Trend Chart -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Sales Trend</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Last 6 Months
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Last 30 Days</a></li>
+                                <li><a class="dropdown-item" href="#">Last 3 Months</a></li>
+                                <li><a class="dropdown-item" href="#">Last 6 Months</a></li>
+                                <li><a class="dropdown-item" href="#">Last Year</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="sales-trend-chart" height="250"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Recent Sales & Products -->
+                <div class="row g-4">
+                    <!-- Recent Sales -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Recent Sales</h5>
+                                <a href="/e-commerce/orders" class="btn btn-sm btn-outline-primary">View All</a>
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="recent-sales" class="p-3">
+                                    <div class="text-center py-5">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">Loading recent sales...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Products -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Recent Products</h5>
+                                <a href="/e-commerce/my-products" class="btn btn-sm btn-outline-primary">View All</a>
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="recent-products" class="p-3">
+                                    <div class="text-center py-5">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">Loading products...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Categories Chart -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Product Categories</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="categories-chart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column - Events & Map -->
+            <div class="col-lg-4">
+                <!-- Upcoming Events -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Upcoming Events</h5>
+                        <a href="/events" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="upcoming-events" class="p-3">
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading events...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Nearby Businesses Map -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Nearby Women-Owned Businesses</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="nearby-businesses-map" class="map-container"></div>
+                        <div id="nearby-businesses" class="p-3" style="max-height: 200px; overflow-y: auto;">
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading nearby businesses...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            <a href="/e-commerce/add-product" class="list-group-item list-group-item-action">
+                                <i class="fas fa-plus me-2"></i> Add New Product
+                            </a>
+                            <a href="/profile" class="list-group-item list-group-item-action">
+                                <i class="fas fa-user-edit me-2"></i> Update Profile
+                            </a>
+                            <a href="/business-tools/marketing" class="list-group-item list-group-item-action">
+                                <i class="fas fa-bullhorn me-2"></i> Create Marketing Campaign
+                            </a>
+                            <a href="/events/create" class="list-group-item list-group-item-action">
+                                <i class="fas fa-calendar-plus me-2"></i> Create Event
+                            </a>
+                            <a href="/community/forum/new" class="list-group-item list-group-item-action">
+                                <i class="fas fa-comments me-2"></i> Start Discussion
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<!-- Dashboard specific scripts -->
+<script type="module" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/google-maps.js') }}"></script>
+{% endblock %}

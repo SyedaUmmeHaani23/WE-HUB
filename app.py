@@ -1,92 +1,104 @@
+"""
+Application configuration and initialization for Women Entrepreneurs Hub.
+"""
 import os
 import logging
-from flask import Flask, render_template, session, redirect, url_for, request, flash, jsonify
-from flask_login import LoginManager, current_user, login_required
-import firebase_admin
-from firebase_admin import credentials, firestore, auth as firebase_auth, storage
+from flask import Flask, render_template, session, redirect, url_for, g, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
+import firebase_admin
+from firebase_admin import credentials, firestore, auth
 
-# Configure logging
-logging.basicConfig(level=logging.DEBUG)
+# Create a base class for SQLAlchemy models
+class Base(DeclarativeBase):
+    pass
 
-# Initialize Flask app
+# Initialize SQLAlchemy
+db = SQLAlchemy(model_class=Base)
+
+# Create Flask application
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET")
-app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)  # needed for url_for to generate with https
 
-# Initialize Firebase Admin
+# Configure database
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///wehub.db")
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_recycle": 300,
+    "pool_pre_ping": True,
+}
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# Initialize database
+db.init_app(app)
+
+# Initialize Firebase Admin SDK
 try:
-    cred_dict = {
-        "type": "service_account",
-        "project_id": os.environ.get("FIREBASE_PROJECT_ID"),
-        "private_key_id": os.environ.get("FIREBASE_PRIVATE_KEY_ID", ""),
-        "private_key": os.environ.get("FIREBASE_PRIVATE_KEY", "").replace('\\n', '\n'),
-        "client_email": os.environ.get("FIREBASE_CLIENT_EMAIL", ""),
-        "client_id": os.environ.get("FIREBASE_CLIENT_ID", ""),
-        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-        "token_uri": "https://oauth2.googleapis.com/token",
-        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "client_x509_cert_url": os.environ.get("FIREBASE_CLIENT_CERT_URL", "")
-    }
+    # Get Firebase project ID from environment
+    firebase_project_id = os.environ.get("FIREBASE_PROJECT_ID")
     
-    cred = credentials.Certificate(cred_dict)
-    firebase_admin.initialize_app(cred, {
-        'storageBucket': f"{os.environ.get('FIREBASE_PROJECT_ID')}.appspot.com"
-    })
-    db = firestore.client()
-    bucket = storage.bucket()
-    logging.info("Firebase Admin initialized successfully.")
+    # Try to initialize with credentials JSON if available
+    cred_path = os.environ.get("FIREBASE_CREDENTIALS_PATH")
+    if cred_path and os.path.exists(cred_path):
+        cred = credentials.Certificate(cred_path)
+        firebase_admin.initialize_app(cred, {
+            'projectId': firebase_project_id
+        })
+    else:
+        # Otherwise initialize default app with project ID
+        firebase_admin.initialize_app(options={
+            'projectId': firebase_project_id
+        })
+    
+    # Get a reference to the Firestore database
+    firestore_db = firestore.client()
+    logging.info("Firebase Admin SDK initialized successfully.")
 except Exception as e:
-    logging.error(f"Firebase Admin initialization failed: {e}")
-    db = None
-    bucket = None
+    logging.error(f"Failed to initialize Firebase Admin SDK: {e}")
+    firestore_db = None
 
-# Initialize Flask-Login
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'auth.login'
+# Create database tables
+with app.app_context():
+    import models  # Import models to ensure they're registered with SQLAlchemy
+    db.create_all()
 
-# Import blueprints
-from auth import auth_bp
-from ecommerce import ecommerce_bp
-from community import community_bp
-from dashboard import dashboard_bp
-from chatbot import chatbot_bp
+# Import routes
+from routes import auth, dashboard, profile, e_commerce, community, events, business_tools, api
 
 # Register blueprints
-app.register_blueprint(auth_bp)
-app.register_blueprint(ecommerce_bp)
-app.register_blueprint(community_bp)
-app.register_blueprint(dashboard_bp)
-app.register_blueprint(chatbot_bp)
+app.register_blueprint(auth.bp)
+app.register_blueprint(dashboard.bp)
+app.register_blueprint(profile.bp)
+app.register_blueprint(e_commerce.bp)
+app.register_blueprint(community.bp)
+app.register_blueprint(events.bp)
+app.register_blueprint(business_tools.bp)
+app.register_blueprint(api.bp)
 
 @app.route('/')
 def index():
-    """Render the homepage"""
+    """Render the homepage of WE Hub."""
     return render_template(
         'index.html',
-        firebase_api_key=os.environ.get("FIREBASE_API_KEY"),
-        firebase_project_id=os.environ.get("FIREBASE_PROJECT_ID"),
-        firebase_app_id=os.environ.get("FIREBASE_APP_ID"),
-        user=current_user if current_user.is_authenticated else None
+        firebase_api_key=os.environ.get("FIREBASE_API_KEY", ""),
+        firebase_project_id=os.environ.get("FIREBASE_PROJECT_ID", ""),
+        firebase_app_id=os.environ.get("FIREBASE_APP_ID", "")
     )
 
 @app.errorhandler(404)
 def page_not_found(e):
-    """Handle 404 errors"""
-    return render_template('base.html', error="Page not found"), 404
+    """Handler for 404 errors."""
+    return render_template('404.html'), 404
 
 @app.errorhandler(500)
 def server_error(e):
-    """Handle 500 errors"""
+    """Handler for 500 errors."""
     logging.error(f"Server error: {e}")
-    return render_template('base.html', error="Internal server error"), 500
+    return render_template('500.html'), 500
 
 @app.context_processor
-def inject_globals():
-    """Inject global variables into templates"""
-    return {
-        'firebase_api_key': os.environ.get("FIREBASE_API_KEY"),
-        'firebase_project_id': os.environ.get("FIREBASE_PROJECT_ID"),
-        'firebase_app_id': os.environ.get("FIREBASE_APP_ID")
-    }
+def inject_user():
+    """Inject user data into templates."""
+    user_data = session.get('user_data')
+    return dict(user_data=user_data)

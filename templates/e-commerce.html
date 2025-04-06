@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}E-Commerce - Women Entrepreneurs Hub{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h1 class="fw-bold">E-Commerce Platform</h1>
+                <p class="lead">Showcase and sell your products to customers around the world</p>
+            </div>
+            <div class="d-none d-md-block">
+                <a href="/e-commerce/add-product" class="btn btn-we-primary">
+                    <i class="fas fa-plus me-1"></i> Add New Product
+                </a>
+            </div>
+        </div>
+        
+        <!-- Product Categories and Search -->
+        <div class="row mb-4">
+            <div class="col-md-9">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="/e-commerce" class="btn btn-sm {% if not category %}btn-we-primary{% else %}btn-outline-primary{% endif %}">All</a>
+                    <a href="/e-commerce?category=handmade" class="btn btn-sm {% if category == 'handmade' %}btn-we-primary{% else %}btn-outline-primary{% endif %}">Handmade</a>
+                    <a href="/e-commerce?category=clothing" class="btn btn-sm {% if category == 'clothing' %}btn-we-primary{% else %}btn-outline-primary{% endif %}">Clothing</a>
+                    <a href="/e-commerce?category=jewelry" class="btn btn-sm {% if category == 'jewelry' %}btn-we-primary{% else %}btn-outline-primary{% endif %}">Jewelry</a>
+                    <a href="/e-commerce?category=home" class="btn btn-sm {% if category == 'home' %}btn-we-primary{% else %}btn-outline-primary{% endif %}">Home Decor</a>
+                    <a href="/e-commerce?category=beauty" class="btn btn-sm {% if category == 'beauty' %}btn-we-primary{% else %}btn-outline-primary{% endif %}">Beauty</a>
+                    <a href="/e-commerce?category=food" class="btn btn-sm {% if category == 'food' %}btn-we-primary{% else %}btn-outline-primary{% endif %}">Food</a>
+                    <a href="/e-commerce?category=art" class="btn btn-sm {% if category == 'art' %}btn-we-primary{% else %}btn-outline-primary{% endif %}">Art</a>
+                    <a href="/e-commerce?category=services" class="btn btn-sm {% if category == 'services' %}btn-we-primary{% else %}btn-outline-primary{% endif %}">Services</a>
+                </div>
+            </div>
+            <div class="col-md-3 mt-3 mt-md-0">
+                <form action="/e-commerce/search" method="get">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search products..." name="q" value="{{ query if query else '' }}">
+                        <button class="btn btn-we-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Products Display -->
+        <div class="row g-4" id="products-container">
+            {% if products %}
+                {% for product in products %}
+                <div class="col-md-4 col-lg-3">
+                    <div class="card product-card h-100">
+                        {% if product.image_url %}
+                        <div style="height: 200px; overflow: hidden;">
+                            <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}" style="object-fit: cover; height: 100%; width: 100%;">
+                        </div>
+                        {% else %}
+                        <div class="bg-secondary text-white d-flex justify-content-center align-items-center" style="height: 200px;">
+                            <i class="fas fa-image fa-3x"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text flex-grow-1">{{ product.description|truncate(100) }}</p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="card-price">${{ "%.2f"|format(product.price) }}</span>
+                                <button class="btn btn-sm btn-we-primary add-to-cart" data-product-id="{{ product.id }}">
+                                    <i class="fas fa-cart-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <small class="text-muted">By {{ product.user.business_name if product.user and product.user.business_name else 'Unknown' }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-store fa-4x mb-3 text-muted"></i>
+                    <h3>No products found</h3>
+                    {% if category %}
+                        <p>No products available in this category yet.</p>
+                    {% elif query %}
+                        <p>No products match your search query.</p>
+                    {% else %}
+                        <p>Be the first to add products to the marketplace!</p>
+                    {% endif %}
+                    <a href="/e-commerce/add-product" class="btn btn-we-primary mt-3">
+                        <i class="fas fa-plus me-1"></i> Add New Product
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if pagination and pagination.pages > 1 %}
+        <nav aria-label="Product pagination" class="mt-5">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if pagination.page == 1 %}disabled{% endif %}">
+                    <a class="page-link" href="{{ pagination.prev_url }}" tabindex="-1" aria-disabled="{{ 'true' if pagination.page == 1 else 'false' }}">Previous</a>
+                </li>
+                
+                {% for page_num in range(1, pagination.pages + 1) %}
+                <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                    <a class="page-link" href="{{ pagination.url_for_page(page_num) }}">{{ page_num }}</a>
+                </li>
+                {% endfor %}
+                
+                <li class="page-item {% if pagination.page == pagination.pages %}disabled{% endif %}">
+                    <a class="page-link" href="{{ pagination.next_url }}">Next</a>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Shopping Cart Toast -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="cart-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i class="fas fa-shopping-cart me-2 text-success"></i>
+            <strong class="me-auto">Product Added</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Product has been added to your cart!
+            <div class="mt-2 pt-2 border-top">
+                <a href="/e-commerce/cart" class="btn btn-sm btn-we-primary">View Cart</a>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="toast">Continue Shopping</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- E-commerce scripts -->
+<script type="module" src="{{ url_for('static', filename='js/e-commerce.js') }}"></script>
+{% endblock %}

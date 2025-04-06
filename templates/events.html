@@ -1,0 +1,406 @@
+{% extends 'base.html' %}
+
+{% block title %}Events - Women Entrepreneurs Hub{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h1 class="fw-bold">Events & Workshops</h1>
+                <p class="lead">Connect, learn, and grow with other women entrepreneurs</p>
+            </div>
+            <div class="d-none d-md-block">
+                <a href="#createEventModal" data-bs-toggle="modal" class="btn btn-we-primary">
+                    <i class="fas fa-plus me-1"></i> Create Event
+                </a>
+            </div>
+        </div>
+        
+        <!-- Event Filters -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="event-filter" id="filter-all" value="all" checked>
+                            <label class="form-check-label" for="filter-all">All Events</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="event-filter" id="filter-upcoming" value="upcoming">
+                            <label class="form-check-label" for="filter-upcoming">Upcoming</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="event-filter" id="filter-past" value="past">
+                            <label class="form-check-label" for="filter-past">Past Events</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select form-select-sm" id="event-type-filter">
+                            <option value="all" selected>All Types</option>
+                            <option value="workshop">Workshops</option>
+                            <option value="networking">Networking</option>
+                            <option value="conference">Conferences</option>
+                            <option value="webinar">Webinars</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control" placeholder="Search events..." id="event-search">
+                            <button class="btn btn-outline-secondary" type="button" id="search-button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Events Calendar -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Events Calendar</h5>
+            </div>
+            <div class="card-body">
+                <div id="events-calendar" class="mb-3">
+                    <!-- Simple calendar UI -->
+                    <div class="row mb-2 align-items-center">
+                        <div class="col-auto">
+                            <button id="prev-month" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                        </div>
+                        <div class="col text-center">
+                            <h5 id="current-month" class="mb-0">Loading...</h5>
+                        </div>
+                        <div class="col-auto">
+                            <button id="next-month" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th>Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                            </tr>
+                        </thead>
+                        <tbody id="calendar-body">
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                                    Loading calendar...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Upcoming Events -->
+        <h3 class="mb-3">Upcoming Events</h3>
+        <div id="upcoming-events-list">
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading upcoming events...</p>
+            </div>
+        </div>
+        
+        <!-- Past Events -->
+        <h3 class="mt-5 mb-3">Past Events</h3>
+        <div id="past-events-list">
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading past events...</p>
+            </div>
+        </div>
+        
+        <!-- Create Event Button (Mobile) -->
+        <div class="d-block d-md-none mt-4">
+            <a href="#createEventModal" data-bs-toggle="modal" class="btn btn-we-primary w-100">
+                <i class="fas fa-plus me-1"></i> Create Event
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Create Event Modal -->
+<div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createEventModalLabel">Create New Event</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="event-form">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Event Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="start_time" class="form-label">Start Time</label>
+                            <input type="time" class="form-control" id="start_time" name="start_time" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="end_time" class="form-label">End Time</label>
+                            <input type="time" class="form-control" id="end_time" name="end_time" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="is_virtual" name="is_virtual">
+                            <label class="form-check-label" for="is_virtual">
+                                This is a virtual event
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="location-field" class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" name="location">
+                    </div>
+                    
+                    <div id="virtual-link-field" class="mb-3 d-none">
+                        <label for="virtual_link" class="form-label">Virtual Meeting Link</label>
+                        <input type="url" class="form-control" id="virtual_link" name="virtual_link" placeholder="https://meet.google.com/...">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="max_participants" class="form-label">Maximum Participants (optional)</label>
+                        <input type="number" class="form-control" id="max_participants" name="max_participants" min="1">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Event Image (optional)</label>
+                        <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-we-primary">Create Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Events scripts -->
+<script type="module" src="{{ url_for('static', filename='js/community.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle virtual event link field
+    const isVirtualCheckbox = document.getElementById('is_virtual');
+    const locationField = document.getElementById('location-field');
+    const virtualLinkField = document.getElementById('virtual-link-field');
+    
+    if (isVirtualCheckbox && locationField && virtualLinkField) {
+        isVirtualCheckbox.addEventListener('change', function() {
+            if (isVirtualCheckbox.checked) {
+                locationField.classList.add('d-none');
+                virtualLinkField.classList.remove('d-none');
+            } else {
+                locationField.classList.remove('d-none');
+                virtualLinkField.classList.add('d-none');
+            }
+        });
+    }
+    
+    // Initialize calendar
+    const today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+    
+    const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+    
+    const prevMonthBtn = document.getElementById('prev-month');
+    const nextMonthBtn = document.getElementById('next-month');
+    const currentMonthLabel = document.getElementById('current-month');
+    const calendarBody = document.getElementById('calendar-body');
+    
+    if (prevMonthBtn && nextMonthBtn && currentMonthLabel && calendarBody) {
+        // Update calendar header
+        currentMonthLabel.textContent = `${months[currentMonth]} ${currentYear}`;
+        
+        // Previous month button
+        prevMonthBtn.addEventListener('click', function() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            currentMonthLabel.textContent = `${months[currentMonth]} ${currentYear}`;
+            renderCalendar(currentMonth, currentYear);
+        });
+        
+        // Next month button
+        nextMonthBtn.addEventListener('click', function() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            currentMonthLabel.textContent = `${months[currentMonth]} ${currentYear}`;
+            renderCalendar(currentMonth, currentYear);
+        });
+        
+        // Render calendar
+        renderCalendar(currentMonth, currentYear);
+    }
+    
+    function renderCalendar(month, year) {
+        // Clear previous calendar
+        calendarBody.innerHTML = '';
+        
+        // Get first day of month and number of days
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        // Create calendar rows
+        let date = 1;
+        for (let i = 0; i < 6; i++) {
+            // Create a table row
+            const row = document.createElement('tr');
+            
+            // Fill row with cells
+            for (let j = 0; j < 7; j++) {
+                if (i === 0 && j < firstDay) {
+                    // Empty cells before first day of month
+                    const cell = document.createElement('td');
+                    cell.classList.add('text-muted');
+                    row.appendChild(cell);
+                } else if (date > daysInMonth) {
+                    // Empty cells after last day of month
+                    const cell = document.createElement('td');
+                    cell.classList.add('text-muted');
+                    row.appendChild(cell);
+                } else {
+                    // Create cell for this date
+                    const cell = document.createElement('td');
+                    cell.textContent = date;
+                    
+                    // Highlight today's date
+                    if (date === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                        cell.classList.add('bg-we-primary', 'text-white');
+                    }
+                    
+                    // Add event indicator
+                    // This would be populated with actual event data in a real implementation
+                    if ((date === 10 || date === 15 || date === 22) && month === currentMonth) {
+                        const dot = document.createElement('div');
+                        dot.className = 'bg-we-secondary rounded-circle mx-auto mt-1';
+                        dot.style.width = '6px';
+                        dot.style.height = '6px';
+                        cell.appendChild(dot);
+                    }
+                    
+                    row.appendChild(cell);
+                    date++;
+                }
+            }
+            
+            calendarBody.appendChild(row);
+            
+            // Stop creating rows if we've reached the end of the month
+            if (date > daysInMonth) {
+                break;
+            }
+        }
+        
+        // Fetch events for this month
+        fetchEventsForMonth(month, year);
+    }
+    
+    function fetchEventsForMonth(month, year) {
+        // This would fetch events from the backend in a real implementation
+        console.log(`Fetching events for ${months[month]} ${year}`);
+        
+        // For now, we'll just fetch upcoming events to show on the page
+        if (window.eventService) {
+            loadEvents();
+        }
+    }
+    
+    // Event search functionality
+    const searchInput = document.getElementById('event-search');
+    const searchButton = document.getElementById('search-button');
+    
+    if (searchInput && searchButton) {
+        searchButton.addEventListener('click', function() {
+            const searchTerm = searchInput.value.trim();
+            if (searchTerm) {
+                // Search events
+                console.log(`Searching for: ${searchTerm}`);
+                // Implement event search functionality
+            }
+        });
+        
+        // Also search on Enter key
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchButton.click();
+            }
+        });
+    }
+    
+    // Event type filter
+    const eventTypeFilter = document.getElementById('event-type-filter');
+    if (eventTypeFilter) {
+        eventTypeFilter.addEventListener('change', function() {
+            const filterValue = eventTypeFilter.value;
+            console.log(`Filtering events by type: ${filterValue}`);
+            // Implement event type filtering
+        });
+    }
+    
+    // Event time filters (All, Upcoming, Past)
+    const eventFilters = document.querySelectorAll('input[name="event-filter"]');
+    if (eventFilters.length) {
+        eventFilters.forEach(filter => {
+            filter.addEventListener('change', function() {
+                if (this.checked) {
+                    const filterValue = this.value;
+                    console.log(`Filtering events by time: ${filterValue}`);
+                    // Implement event time filtering
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

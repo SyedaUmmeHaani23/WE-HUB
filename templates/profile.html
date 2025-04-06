@@ -1,0 +1,653 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Women Entrepreneurs Hub{% endblock %}
+
+{% block content %}
+<section class="profile-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-3 text-center text-md-start">
+                <div class="position-relative d-inline-block">
+                    <img src="{{ user_data.profile_picture if user_data and user_data.profile_picture else 'https://via.placeholder.com/150' }}" 
+                         alt="Profile Picture" class="profile-picture" id="profile-image-preview">
+                    <label for="profile-image-upload" class="btn btn-sm btn-light rounded-circle position-absolute bottom-0 end-0" style="cursor: pointer;">
+                        <i class="fas fa-camera"></i>
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-9 text-center text-md-start mt-3 mt-md-0">
+                <h1 class="mb-1 user-name">{{ user_data.full_name if user_data and user_data.full_name else 'Your Name' }}</h1>
+                <h3 class="mb-3">{{ user_data.business_name if user_data and user_data.business_name else 'Your Business' }}</h3>
+                <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-start">
+                    <a href="/e-commerce/my-products" class="btn btn-light">
+                        <i class="fas fa-store me-1"></i> My Products
+                    </a>
+                    <a href="/business-tools" class="btn btn-light">
+                        <i class="fas fa-tools me-1"></i> Business Tools
+                    </a>
+                    <a href="/e-commerce/orders" class="btn btn-light">
+                        <i class="fas fa-shopping-bag me-1"></i> Orders
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container py-5">
+    <div class="row">
+        <!-- Profile Navigation -->
+        <div class="col-md-3 mb-4">
+            <div class="list-group">
+                <a href="#personal-info" class="list-group-item list-group-item-action active" data-bs-toggle="list">
+                    <i class="fas fa-user me-2"></i> Personal Information
+                </a>
+                <a href="#business-info" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="fas fa-briefcase me-2"></i> Business Information
+                </a>
+                <a href="#location" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="fas fa-map-marker-alt me-2"></i> Location
+                </a>
+                <a href="#social-profiles" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="fas fa-share-alt me-2"></i> Social Profiles
+                </a>
+                <a href="#account-settings" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="fas fa-cog me-2"></i> Account Settings
+                </a>
+                <a href="#google-business" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="fab fa-google me-2"></i> Google My Business
+                </a>
+            </div>
+        </div>
+        
+        <!-- Profile Content -->
+        <div class="col-md-9">
+            <div class="tab-content">
+                <!-- Personal Information -->
+                <div class="tab-pane fade show active" id="personal-info">
+                    <div class="card profile-details">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">Personal Information</h3>
+                            <form id="personal-info-form">
+                                <input type="hidden" id="profile-image-upload" name="profile_picture">
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="full-name" class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" id="full-name" name="full_name" 
+                                               value="{{ user_data.full_name if user_data and user_data.full_name else '' }}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="username" name="username" 
+                                               value="{{ user_data.username if user_data and user_data.username else '' }}" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="email" name="email" 
+                                               value="{{ user_data.email if user_data and user_data.email else '' }}" required readonly>
+                                        <div class="form-text">Email address cannot be changed</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label">Phone Number</label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" 
+                                               value="{{ user_data.phone if user_data and user_data.phone else '' }}">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="bio" class="form-label">Bio</label>
+                                    <textarea class="form-control" id="bio" name="bio" rows="3">{{ user_data.bio if user_data and user_data.bio else '' }}</textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-we-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Business Information -->
+                <div class="tab-pane fade" id="business-info">
+                    <div class="card profile-details">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">Business Information</h3>
+                            <form id="business-info-form">
+                                <div class="mb-3">
+                                    <label for="business-name" class="form-label">Business Name</label>
+                                    <input type="text" class="form-control" id="business-name" name="business_name" 
+                                           value="{{ user_data.business_name if user_data and user_data.business_name else '' }}" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="business-category" class="form-label">Business Category</label>
+                                    <select class="form-select" id="business-category" name="business_category" required>
+                                        <option value="" selected disabled>Select a category</option>
+                                        <option value="handmade" {% if user_data and user_data.business_category == 'handmade' %}selected{% endif %}>Handmade Crafts</option>
+                                        <option value="food" {% if user_data and user_data.business_category == 'food' %}selected{% endif %}>Food & Beverage</option>
+                                        <option value="clothing" {% if user_data and user_data.business_category == 'clothing' %}selected{% endif %}>Clothing & Fashion</option>
+                                        <option value="art" {% if user_data and user_data.business_category == 'art' %}selected{% endif %}>Art & Design</option>
+                                        <option value="beauty" {% if user_data and user_data.business_category == 'beauty' %}selected{% endif %}>Beauty & Wellness</option>
+                                        <option value="education" {% if user_data and user_data.business_category == 'education' %}selected{% endif %}>Education & Coaching</option>
+                                        <option value="tech" {% if user_data and user_data.business_category == 'tech' %}selected{% endif %}>Technology</option>
+                                        <option value="retail" {% if user_data and user_data.business_category == 'retail' %}selected{% endif %}>Retail</option>
+                                        <option value="services" {% if user_data and user_data.business_category == 'services' %}selected{% endif %}>Professional Services</option>
+                                        <option value="other" {% if user_data and user_data.business_category == 'other' %}selected{% endif %}>Other</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="business-description" class="form-label">Business Description</label>
+                                    <textarea class="form-control" id="business-description" name="business_description" rows="4">{{ user_data.business_description if user_data and user_data.business_description else '' }}</textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="website" class="form-label">Website URL</label>
+                                    <input type="url" class="form-control" id="website" name="website" 
+                                           value="{{ user_data.website if user_data and user_data.website else '' }}">
+                                </div>
+                                
+                                <button type="submit" class="btn btn-we-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Location -->
+                <div class="tab-pane fade" id="location">
+                    <div class="card profile-details">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">Location Information</h3>
+                            <form id="location-form">
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Business Address</label>
+                                    <input type="text" class="form-control" id="address" name="address"
+                                           value="{{ user_data.address if user_data and user_data.address else '' }}">
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="city" class="form-label">City</label>
+                                        <input type="text" class="form-control" id="city" name="city"
+                                               value="{{ user_data.city if user_data and user_data.city else '' }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="state" class="form-label">State/Province</label>
+                                        <input type="text" class="form-control" id="state" name="state"
+                                               value="{{ user_data.state if user_data and user_data.state else '' }}">
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="postal-code" class="form-label">Postal/ZIP Code</label>
+                                        <input type="text" class="form-control" id="postal-code" name="postal_code"
+                                               value="{{ user_data.postal_code if user_data and user_data.postal_code else '' }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="country" class="form-label">Country</label>
+                                        <input type="text" class="form-control" id="country" name="country"
+                                               value="{{ user_data.country if user_data and user_data.country else '' }}">
+                                    </div>
+                                </div>
+                                
+                                <input type="hidden" id="latitude" name="latitude" value="{{ user_data.latitude if user_data and user_data.latitude else '' }}">
+                                <input type="hidden" id="longitude" name="longitude" value="{{ user_data.longitude if user_data and user_data.longitude else '' }}">
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Business Location on Map</label>
+                                    <div id="business-map" class="map-container" 
+                                         data-lat="{{ user_data.latitude if user_data and user_data.latitude else '' }}"
+                                         data-lng="{{ user_data.longitude if user_data and user_data.longitude else '' }}"
+                                         data-name="{{ user_data.business_name if user_data and user_data.business_name else '' }}"></div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-we-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Social Profiles -->
+                <div class="tab-pane fade" id="social-profiles">
+                    <div class="card profile-details">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">Social Media Profiles</h3>
+                            <form id="social-profiles-form">
+                                <div class="mb-3">
+                                    <label for="facebook" class="form-label">
+                                        <i class="fab fa-facebook me-2"></i> Facebook
+                                    </label>
+                                    <input type="url" class="form-control" id="facebook" name="facebook" 
+                                           placeholder="https://facebook.com/yourbusiness"
+                                           value="{{ user_data.facebook if user_data and user_data.facebook else '' }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="instagram" class="form-label">
+                                        <i class="fab fa-instagram me-2"></i> Instagram
+                                    </label>
+                                    <input type="url" class="form-control" id="instagram" name="instagram" 
+                                           placeholder="https://instagram.com/yourbusiness"
+                                           value="{{ user_data.instagram if user_data and user_data.instagram else '' }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="twitter" class="form-label">
+                                        <i class="fab fa-twitter me-2"></i> Twitter
+                                    </label>
+                                    <input type="url" class="form-control" id="twitter" name="twitter" 
+                                           placeholder="https://twitter.com/yourbusiness"
+                                           value="{{ user_data.twitter if user_data and user_data.twitter else '' }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="linkedin" class="form-label">
+                                        <i class="fab fa-linkedin me-2"></i> LinkedIn
+                                    </label>
+                                    <input type="url" class="form-control" id="linkedin" name="linkedin" 
+                                           placeholder="https://linkedin.com/in/yourbusiness"
+                                           value="{{ user_data.linkedin if user_data and user_data.linkedin else '' }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="pinterest" class="form-label">
+                                        <i class="fab fa-pinterest me-2"></i> Pinterest
+                                    </label>
+                                    <input type="url" class="form-control" id="pinterest" name="pinterest" 
+                                           placeholder="https://pinterest.com/yourbusiness"
+                                           value="{{ user_data.pinterest if user_data and user_data.pinterest else '' }}">
+                                </div>
+                                
+                                <button type="submit" class="btn btn-we-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Account Settings -->
+                <div class="tab-pane fade" id="account-settings">
+                    <div class="card profile-details">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">Account Settings</h3>
+                            
+                            <div class="mb-4">
+                                <h5>Change Password</h5>
+                                <form id="change-password-form">
+                                    <div class="mb-3">
+                                        <label for="current-password" class="form-label">Current Password</label>
+                                        <input type="password" class="form-control" id="current-password" name="current_password" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="new-password" class="form-label">New Password</label>
+                                        <input type="password" class="form-control" id="new-password" name="new_password" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="confirm-new-password" class="form-label">Confirm New Password</label>
+                                        <input type="password" class="form-control" id="confirm-new-password" name="confirm_new_password" required>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-we-primary">Change Password</button>
+                                </form>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="mb-4">
+                                <h5>Email Notifications</h5>
+                                <form id="notification-settings-form">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="order-notifications" name="order_notifications" checked>
+                                        <label class="form-check-label" for="order-notifications">
+                                            Order notifications
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="product-notifications" name="product_notifications" checked>
+                                        <label class="form-check-label" for="product-notifications">
+                                            Product updates
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="event-notifications" name="event_notifications" checked>
+                                        <label class="form-check-label" for="event-notifications">
+                                            Event and workshop notifications
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="forum-notifications" name="forum_notifications" checked>
+                                        <label class="form-check-label" for="forum-notifications">
+                                            Forum and comment notifications
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="marketing-notifications" name="marketing_notifications" checked>
+                                        <label class="form-check-label" for="marketing-notifications">
+                                            Marketing and promotional emails
+                                        </label>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-we-primary">Save Notification Preferences</button>
+                                </form>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div>
+                                <h5 class="text-danger">Danger Zone</h5>
+                                <p>Once you delete your account, there is no going back. Please be certain.</p>
+                                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                    Delete Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Google My Business -->
+                <div class="tab-pane fade" id="google-business">
+                    <div class="card profile-details">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">Google My Business Integration</h3>
+                            
+                            {% if user_data and user_data.google_business_id %}
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i> Your business is connected to Google My Business
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h5>Business Information</h5>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Name</label>
+                                            <p>{{ user_data.business_name }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Category</label>
+                                            <p>{{ user_data.business_category }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Phone</label>
+                                            <p>{{ user_data.phone }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Address</label>
+                                    <p>{{ user_data.address if user_data.address else 'No address provided' }}</p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Website</label>
+                                    <p>{{ user_data.website if user_data.website else 'No website provided' }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h5>Business Hours</h5>
+                                <form id="business-hours-form">
+                                    <div class="row mb-2">
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="monday-open" name="monday_open" checked>
+                                                <label class="form-check-label" for="monday-open">Monday</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="row">
+                                                <div class="col-5">
+                                                    <input type="time" class="form-control form-control-sm" name="monday_open_time" value="09:00">
+                                                </div>
+                                                <div class="col-2 text-center">to</div>
+                                                <div class="col-5">
+                                                    <input type="time" class="form-control form-control-sm" name="monday_close_time" value="17:00">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Repeat for other days of the week -->
+                                    <div class="row mb-2">
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="tuesday-open" name="tuesday_open" checked>
+                                                <label class="form-check-label" for="tuesday-open">Tuesday</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="row">
+                                                <div class="col-5">
+                                                    <input type="time" class="form-control form-control-sm" name="tuesday_open_time" value="09:00">
+                                                </div>
+                                                <div class="col-2 text-center">to</div>
+                                                <div class="col-5">
+                                                    <input type="time" class="form-control form-control-sm" name="tuesday_close_time" value="17:00">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- More days... -->
+                                    
+                                    <button type="submit" class="btn btn-we-primary mt-3">Update Business Hours</button>
+                                </form>
+                            </div>
+                            
+                            <div>
+                                <h5>Google Reviews</h5>
+                                <p>You have 0 reviews with an average rating of 0.0</p>
+                                <a href="https://business.google.com/dashboard" target="_blank" class="btn btn-outline-primary">
+                                    <i class="fab fa-google me-2"></i> Manage on Google
+                                </a>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i> Connect your business to Google My Business to increase your online visibility
+                            </div>
+                            
+                            <p>Google My Business helps you manage your business information across Google Search and Maps. By connecting your business, you'll gain:</p>
+                            
+                            <ul>
+                                <li>Better visibility in Google Search and Maps</li>
+                                <li>Ability to respond to customer reviews</li>
+                                <li>Insights about how customers find and interact with your business</li>
+                                <li>Options to post updates, offers, and events</li>
+                            </ul>
+                            
+                            <div class="mb-4">
+                                <h5>Connect Your Business</h5>
+                                <p>Choose one of the following options:</p>
+                                
+                                <div class="mb-3">
+                                    <button class="btn btn-we-primary" id="connect-existing-business">
+                                        <i class="fab fa-google me-2"></i> Connect Existing Google Business
+                                    </button>
+                                    <div class="form-text">If you already have a Google My Business listing</div>
+                                </div>
+                                
+                                <div>
+                                    <button class="btn btn-outline-primary" id="create-new-business">
+                                        <i class="fas fa-plus me-2"></i> Create New Google Business Listing
+                                    </button>
+                                    <div class="form-text">If you don't have a Google My Business listing yet</div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Confirmation Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAccountModalLabel">Confirm Account Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Warning:</strong> This action cannot be undone.
+                </div>
+                <p>You're about to delete your account and all associated data including:</p>
+                <ul>
+                    <li>Your business profile and information</li>
+                    <li>All your products and listings</li>
+                    <li>Order history and customer data</li>
+                    <li>Forum posts and event registrations</li>
+                </ul>
+                <p>Please type <strong>DELETE</strong> to confirm:</p>
+                <input type="text" class="form-control" id="delete-confirmation" placeholder="Type DELETE here">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirm-delete-account" disabled>Delete Account</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/google-maps.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle profile image upload preview
+    const profileImageUpload = document.getElementById('profile-image-upload');
+    const profileImagePreview = document.getElementById('profile-image-preview');
+    
+    if (profileImageUpload && profileImagePreview) {
+        profileImageUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profileImagePreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // Validate delete account confirmation
+    const deleteConfirmation = document.getElementById('delete-confirmation');
+    const confirmDeleteButton = document.getElementById('confirm-delete-account');
+    
+    if (deleteConfirmation && confirmDeleteButton) {
+        deleteConfirmation.addEventListener('input', function() {
+            confirmDeleteButton.disabled = deleteConfirmation.value !== 'DELETE';
+        });
+        
+        confirmDeleteButton.addEventListener('click', function() {
+            if (deleteConfirmation.value === 'DELETE') {
+                // Send delete account request
+                fetch('/api/account/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Sign out and redirect to home
+                        window.signOutUser();
+                    } else {
+                        alert('Error deleting account: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting your account.');
+                });
+            }
+        });
+    }
+    
+    // Handle form submissions
+    const forms = [
+        'personal-info-form',
+        'business-info-form',
+        'location-form',
+        'social-profiles-form',
+        'notification-settings-form',
+        'change-password-form',
+        'business-hours-form'
+    ];
+    
+    forms.forEach(formId => {
+        const form = document.getElementById(formId);
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(form);
+                const endpoint = `/api/profile/${formId.replace('-form', '')}`;
+                
+                fetch(endpoint, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Changes saved successfully!');
+                        
+                        // Update user name in UI if changed
+                        if (formId === 'personal-info-form') {
+                            const fullName = formData.get('full_name');
+                            if (fullName) {
+                                document.querySelectorAll('.user-name').forEach(el => {
+                                    el.textContent = fullName;
+                                });
+                            }
+                        }
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while saving changes.');
+                });
+            });
+        }
+    });
+    
+    // Google My Business connection buttons
+    const connectExistingBtn = document.getElementById('connect-existing-business');
+    const createNewBtn = document.getElementById('create-new-business');
+    
+    if (connectExistingBtn) {
+        connectExistingBtn.addEventListener('click', function() {
+            window.open('https://business.google.com/create', '_blank');
+        });
+    }
+    
+    if (createNewBtn) {
+        createNewBtn.addEventListener('click', function() {
+            window.open('https://business.google.com/create', '_blank');
+        });
+    }
+});
+</script>
+{% endblock %}

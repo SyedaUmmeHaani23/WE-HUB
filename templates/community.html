@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+
+{% block title %}Community - Women Entrepreneurs Hub{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h1 class="fw-bold">Community</h1>
+                <p class="lead">Connect with other women entrepreneurs, share ideas, and grow together</p>
+            </div>
+            <div class="d-none d-md-block">
+                <a href="#createPostModal" data-bs-toggle="modal" class="btn btn-we-primary">
+                    <i class="fas fa-plus me-1"></i> Create Post
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Forum and Discussion Board -->
+            <div class="col-lg-8">
+                <!-- Category Filter -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Forum Discussions</h5>
+                            <div>
+                                <select class="form-select form-select-sm" id="category-filter">
+                                    <option value="all" selected>All Categories</option>
+                                    <option value="business">Business Strategy</option>
+                                    <option value="marketing">Marketing</option>
+                                    <option value="finance">Finance</option>
+                                    <option value="tech">Technology</option>
+                                    <option value="support">Support & Advice</option>
+                                    <option value="success">Success Stories</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Forum Posts -->
+                <div id="forum-posts">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading discussions...</p>
+                    </div>
+                </div>
+                
+                <!-- Create Post Button (Mobile) -->
+                <div class="d-block d-md-none mt-3">
+                    <a href="#createPostModal" data-bs-toggle="modal" class="btn btn-we-primary w-100">
+                        <i class="fas fa-plus me-1"></i> Create Post
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4 mt-4 mt-lg-0">
+                <!-- Community Stats -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Community Stats</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Total Members:</span>
+                            <span class="fw-bold" id="total-members">Loading...</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Active Discussions:</span>
+                            <span class="fw-bold" id="active-discussions">Loading...</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Posts This Week:</span>
+                            <span class="fw-bold" id="weekly-posts">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Upcoming Events -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Upcoming Events</h5>
+                        <a href="/events" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="upcoming-events-preview" class="p-3">
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading events...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hot Topics -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Hot Topics</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <span class="badge bg-we-primary float-end">42</span>
+                                Digital Marketing Strategies
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <span class="badge bg-we-primary float-end">31</span>
+                                Funding Opportunities
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <span class="badge bg-we-primary float-end">27</span>
+                                E-commerce Best Practices
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <span class="badge bg-we-primary float-end">18</span>
+                                Work-Life Balance
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <span class="badge bg-we-primary float-end">12</span>
+                                Business Legal Advice
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Featured Members -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Featured Members</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="25" cy="25" r="25" fill="#8e44ad" opacity="0.2"/>
+                                    <circle cx="25" cy="20" r="8" fill="#8e44ad"/>
+                                    <path d="M40,40 C40,30 35,28 25,28 C15,28 10,30 10,40" fill="#8e44ad"/>
+                                </svg>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-0">Sarah Johnson</h6>
+                                <small class="text-muted">Handmade Jewelry</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="25" cy="25" r="25" fill="#e74c3c" opacity="0.2"/>
+                                    <circle cx="25" cy="20" r="8" fill="#e74c3c"/>
+                                    <path d="M40,40 C40,30 35,28 25,28 C15,28 10,30 10,40" fill="#e74c3c"/>
+                                </svg>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-0">Maria Rodriguez</h6>
+                                <small class="text-muted">Organic Bakery</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="25" cy="25" r="25" fill="#3498db" opacity="0.2"/>
+                                    <circle cx="25" cy="20" r="8" fill="#3498db"/>
+                                    <path d="M40,40 C40,30 35,28 25,28 C15,28 10,30 10,40" fill="#3498db"/>
+                                </svg>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-0">Priya Patel</h6>
+                                <small class="text-muted">Wellness Coaching</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Create Post Modal -->
+<div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createPostModalLabel">Create New Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="forum-post-form">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="" selected disabled>Select a category</option>
+                            <option value="business">Business Strategy</option>
+                            <option value="marketing">Marketing</option>
+                            <option value="finance">Finance</option>
+                            <option value="tech">Technology</option>
+                            <option value="support">Support & Advice</option>
+                            <option value="success">Success Stories</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Content</label>
+                        <textarea class="form-control" id="content" name="content" rows="6" required></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-we-primary">Publish Post</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Community scripts -->
+<script type="module" src="{{ url_for('static', filename='js/community.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle category filter
+    const categoryFilter = document.getElementById('category-filter');
+    if (categoryFilter) {
+        categoryFilter.addEventListener('change', function() {
+            // Reload posts with new filter
+            if (window.forumService) {
+                const category = categoryFilter.value;
+                loadForumPosts(category);
+            }
+        });
+    }
+    
+    // Function to load community stats
+    function loadCommunityStats() {
+        fetch('/api/community/stats')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('total-members').textContent = data.total_members || '0';
+                document.getElementById('active-discussions').textContent = data.active_discussions || '0';
+                document.getElementById('weekly-posts').textContent = data.weekly_posts || '0';
+            })
+            .catch(error => {
+                console.error('Error loading community stats:', error);
+                document.getElementById('total-members').textContent = '0';
+                document.getElementById('active-discussions').textContent = '0';
+                document.getElementById('weekly-posts').textContent = '0';
+            });
+    }
+    
+    // Function to load upcoming events preview
+    function loadUpcomingEventsPreview() {
+        const container = document.getElementById('upcoming-events-preview');
+        if (!container) return;
+        
+        fetch('/api/events/upcoming?limit=3')
+            .then(response => response.json())
+            .then(events => {
+                if (events.length === 0) {
+                    container.innerHTML = '<div class="text-center p-3">No upcoming events</div>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                events.forEach(event => {
+                    const eventEl = document.createElement('div');
+                    eventEl.className = 'event-item p-2 border-bottom';
+                    
+                    const startDate = new Date(event.start_datetime);
+                    const formattedDate = startDate.toLocaleDateString();
+                    
+                    eventEl.innerHTML = `
+                        <div class="event-title fw-bold">${event.title}</div>
+                        <div class="event-time small text-muted">
+                            <i class="fa fa-calendar me-1"></i>${formattedDate}
+                        </div>
+                        <a href="/events/${event.id}" class="btn btn-sm btn-outline-primary mt-1">View Details</a>
+                    `;
+                    
+                    container.appendChild(eventEl);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading upcoming events:', error);
+                container.innerHTML = '<div class="alert alert-danger">Error loading events</div>';
+            });
+    }
+    
+    // Load community stats and events preview
+    loadCommunityStats();
+    loadUpcomingEventsPreview();
+});
+</script>
+{% endblock %}

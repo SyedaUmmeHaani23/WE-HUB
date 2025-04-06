@@ -1,273 +1,152 @@
-from firebase_admin import firestore
+"""
+Database models for the Women Entrepreneurs Hub application.
+"""
+from datetime import datetime
+from app import db
 from flask_login import UserMixin
 
-class User(UserMixin):
-    """User model for Firebase authentication"""
-    
-    def __init__(self, uid, email=None, display_name=None, photo_url=None, business_data=None):
-        self.id = uid
-        self.email = email
-        self.display_name = display_name
-        self.photo_url = photo_url
-        self.business_data = business_data or {}
-    
-    @staticmethod
-    def get(user_id):
-        """Get user by ID from Firestore"""
-        from app import db
-        if not db:
-            return None
-            
-        user_doc = db.collection('users').document(user_id).get()
-        if not user_doc.exists:
-            return None
-            
-        user_data = user_doc.to_dict()
-        return User(
-            uid=user_id,
-            email=user_data.get('email'),
-            display_name=user_data.get('display_name'),
-            photo_url=user_data.get('photo_url'),
-            business_data=user_data.get('business_data')
-        )
-    
-    def save(self):
-        """Save user data to Firestore"""
-        from app import db
-        if not db:
-            return False
-            
-        user_data = {
-            'email': self.email,
-            'display_name': self.display_name,
-            'photo_url': self.photo_url,
-            'business_data': self.business_data,
-            'updated_at': firestore.SERVER_TIMESTAMP
-        }
-        
-        db.collection('users').document(self.id).set(user_data, merge=True)
-        return True
+class User(UserMixin, db.Model):
+    """User model for local database references."""
+    id = db.Column(db.Integer, primary_key=True)
+    firebase_uid = db.Column(db.String(128), unique=True, nullable=False)
+    username = db.Column(db.String(64), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    full_name = db.Column(db.String(120), nullable=True)
+    profile_picture = db.Column(db.String(256), nullable=True)
+    business_name = db.Column(db.String(120), nullable=True)
+    business_description = db.Column(db.Text, nullable=True)
+    business_category = db.Column(db.String(64), nullable=True)
+    website = db.Column(db.String(256), nullable=True)
+    phone = db.Column(db.String(20), nullable=True)
+    address = db.Column(db.String(256), nullable=True)
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
+    google_business_id = db.Column(db.String(128), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True)
 
-class Product:
-    """Product model for e-commerce functionality"""
-    
-    def __init__(self, product_id=None, user_id=None, name=None, description=None, 
-                 price=None, category=None, images=None, in_stock=True):
-        self.id = product_id
-        self.user_id = user_id
-        self.name = name
-        self.description = description
-        self.price = price
-        self.category = category
-        self.images = images or []
-        self.in_stock = in_stock
-    
-    @staticmethod
-    def get(product_id):
-        """Get product by ID from Firestore"""
-        from app import db
-        if not db:
-            return None
-            
-        product_doc = db.collection('products').document(product_id).get()
-        if not product_doc.exists:
-            return None
-            
-        product_data = product_doc.to_dict()
-        return Product(
-            product_id=product_id,
-            user_id=product_data.get('user_id'),
-            name=product_data.get('name'),
-            description=product_data.get('description'),
-            price=product_data.get('price'),
-            category=product_data.get('category'),
-            images=product_data.get('images', []),
-            in_stock=product_data.get('in_stock', True)
-        )
-    
-    @staticmethod
-    def get_by_user(user_id):
-        """Get all products by user ID from Firestore"""
-        from app import db
-        if not db:
-            return []
-            
-        products = []
-        product_docs = db.collection('products').where('user_id', '==', user_id).stream()
-        
-        for doc in product_docs:
-            product_data = doc.to_dict()
-            products.append(Product(
-                product_id=doc.id,
-                user_id=product_data.get('user_id'),
-                name=product_data.get('name'),
-                description=product_data.get('description'),
-                price=product_data.get('price'),
-                category=product_data.get('category'),
-                images=product_data.get('images', []),
-                in_stock=product_data.get('in_stock', True)
-            ))
-        
-        return products
-    
-    def save(self):
-        """Save product data to Firestore"""
-        from app import db
-        if not db:
-            return None
-            
-        product_data = {
-            'user_id': self.user_id,
-            'name': self.name,
-            'description': self.description,
-            'price': self.price,
-            'category': self.category,
-            'images': self.images,
-            'in_stock': self.in_stock,
-            'updated_at': firestore.SERVER_TIMESTAMP
-        }
-        
-        if self.id:
-            db.collection('products').document(self.id).set(product_data, merge=True)
-            return self.id
-        else:
-            doc_ref = db.collection('products').add(product_data)
-            self.id = doc_ref[1].id
-            return self.id
-    
-    def delete(self):
-        """Delete product from Firestore"""
-        from app import db
-        if not db or not self.id:
-            return False
-            
-        db.collection('products').document(self.id).delete()
-        return True
+    def __repr__(self):
+        return f'<User {self.username}>'
 
-class ForumPost:
-    """Forum post model for community features"""
-    
-    def __init__(self, post_id=None, user_id=None, title=None, content=None, 
-                 category=None, created_at=None, updated_at=None, comments=None):
-        self.id = post_id
-        self.user_id = user_id
-        self.title = title
-        self.content = content
-        self.category = category
-        self.created_at = created_at
-        self.updated_at = updated_at
-        self.comments = comments or []
-    
-    @staticmethod
-    def get(post_id):
-        """Get forum post by ID from Firestore"""
-        from app import db
-        if not db:
-            return None
-            
-        post_doc = db.collection('forum_posts').document(post_id).get()
-        if not post_doc.exists:
-            return None
-            
-        post_data = post_doc.to_dict()
-        return ForumPost(
-            post_id=post_id,
-            user_id=post_data.get('user_id'),
-            title=post_data.get('title'),
-            content=post_data.get('content'),
-            category=post_data.get('category'),
-            created_at=post_data.get('created_at'),
-            updated_at=post_data.get('updated_at'),
-            comments=post_data.get('comments', [])
-        )
-    
-    def save(self):
-        """Save forum post data to Firestore"""
-        from app import db
-        if not db:
-            return None
-            
-        post_data = {
-            'user_id': self.user_id,
-            'title': self.title,
-            'content': self.content,
-            'category': self.category,
-            'comments': self.comments,
-            'updated_at': firestore.SERVER_TIMESTAMP
-        }
-        
-        if not self.created_at:
-            post_data['created_at'] = firestore.SERVER_TIMESTAMP
-        
-        if self.id:
-            db.collection('forum_posts').document(self.id).set(post_data, merge=True)
-            return self.id
-        else:
-            doc_ref = db.collection('forum_posts').add(post_data)
-            self.id = doc_ref[1].id
-            return self.id
+class Product(db.Model):
+    """Product model for e-commerce."""
+    id = db.Column(db.Integer, primary_key=True)
+    firebase_id = db.Column(db.String(128), unique=True, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    name = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    price = db.Column(db.Float, nullable=False)
+    image_url = db.Column(db.String(256), nullable=True)
+    category = db.Column(db.String(64), nullable=True)
+    stock = db.Column(db.Integer, default=0)
+    is_available = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-class Event:
-    """Event model for community events"""
-    
-    def __init__(self, event_id=None, user_id=None, title=None, description=None, 
-                 date=None, time=None, location=None, is_virtual=False, meeting_link=None):
-        self.id = event_id
-        self.user_id = user_id
-        self.title = title
-        self.description = description
-        self.date = date
-        self.time = time
-        self.location = location
-        self.is_virtual = is_virtual
-        self.meeting_link = meeting_link
-    
-    @staticmethod
-    def get(event_id):
-        """Get event by ID from Firestore"""
-        from app import db
-        if not db:
-            return None
-            
-        event_doc = db.collection('events').document(event_id).get()
-        if not event_doc.exists:
-            return None
-            
-        event_data = event_doc.to_dict()
-        return Event(
-            event_id=event_id,
-            user_id=event_data.get('user_id'),
-            title=event_data.get('title'),
-            description=event_data.get('description'),
-            date=event_data.get('date'),
-            time=event_data.get('time'),
-            location=event_data.get('location'),
-            is_virtual=event_data.get('is_virtual', False),
-            meeting_link=event_data.get('meeting_link')
-        )
-    
-    def save(self):
-        """Save event data to Firestore"""
-        from app import db
-        if not db:
-            return None
-            
-        event_data = {
-            'user_id': self.user_id,
-            'title': self.title,
-            'description': self.description,
-            'date': self.date,
-            'time': self.time,
-            'location': self.location,
-            'is_virtual': self.is_virtual,
-            'meeting_link': self.meeting_link,
-            'updated_at': firestore.SERVER_TIMESTAMP
-        }
-        
-        if self.id:
-            db.collection('events').document(self.id).set(event_data, merge=True)
-            return self.id
-        else:
-            doc_ref = db.collection('events').add(event_data)
-            self.id = doc_ref[1].id
-            return self.id
+    user = db.relationship('User', backref=db.backref('products', lazy=True))
+
+    def __repr__(self):
+        return f'<Product {self.name}>'
+
+class Event(db.Model):
+    """Event model for community events and workshops."""
+    id = db.Column(db.Integer, primary_key=True)
+    firebase_id = db.Column(db.String(128), unique=True, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    title = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    start_datetime = db.Column(db.DateTime, nullable=False)
+    end_datetime = db.Column(db.DateTime, nullable=False)
+    location = db.Column(db.String(256), nullable=True)
+    virtual_link = db.Column(db.String(256), nullable=True)
+    is_virtual = db.Column(db.Boolean, default=False)
+    max_participants = db.Column(db.Integer, nullable=True)
+    image_url = db.Column(db.String(256), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = db.relationship('User', backref=db.backref('events', lazy=True))
+
+    def __repr__(self):
+        return f'<Event {self.title}>'
+
+class ForumPost(db.Model):
+    """Forum post model for community discussions."""
+    id = db.Column(db.Integer, primary_key=True)
+    firebase_id = db.Column(db.String(128), unique=True, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    title = db.Column(db.String(120), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    category = db.Column(db.String(64), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = db.relationship('User', backref=db.backref('forum_posts', lazy=True))
+
+    def __repr__(self):
+        return f'<ForumPost {self.title}>'
+
+class ForumComment(db.Model):
+    """Forum comment model for community discussions."""
+    id = db.Column(db.Integer, primary_key=True)
+    firebase_id = db.Column(db.String(128), unique=True, nullable=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('forum_post.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    post = db.relationship('ForumPost', backref=db.backref('comments', lazy=True))
+    user = db.relationship('User', backref=db.backref('forum_comments', lazy=True))
+
+    def __repr__(self):
+        return f'<ForumComment {self.id}>'
+
+class EventRegistration(db.Model):
+    """Event registration model for users registering to events."""
+    id = db.Column(db.Integer, primary_key=True)
+    firebase_id = db.Column(db.String(128), unique=True, nullable=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    registration_date = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(20), default='registered')  # registered, attended, cancelled
+
+    event = db.relationship('Event', backref=db.backref('registrations', lazy=True))
+    user = db.relationship('User', backref=db.backref('event_registrations', lazy=True))
+
+    def __repr__(self):
+        return f'<EventRegistration {self.id}>'
+
+class Order(db.Model):
+    """Order model for e-commerce purchases."""
+    id = db.Column(db.Integer, primary_key=True)
+    firebase_id = db.Column(db.String(128), unique=True, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    total_amount = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(20), default='pending')  # pending, completed, cancelled
+    payment_method = db.Column(db.String(50), nullable=True)
+    payment_id = db.Column(db.String(128), nullable=True)
+    shipping_address = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = db.relationship('User', backref=db.backref('orders', lazy=True))
+
+    def __repr__(self):
+        return f'<Order {self.id}>'
+
+class OrderItem(db.Model):
+    """Order item model for individual items in an order."""
+    id = db.Column(db.Integer, primary_key=True)
+    firebase_id = db.Column(db.String(128), unique=True, nullable=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+
+    order = db.relationship('Order', backref=db.backref('items', lazy=True))
+    product = db.relationship('Product')
+
+    def __repr__(self):
+        return f'<OrderItem {self.id}>'
