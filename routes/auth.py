@@ -2,6 +2,7 @@
 Authentication routes for Women Entrepreneurs Hub.
 Handles user login, registration, token verification, and authentication flow.
 """
+import os
 import logging
 from flask import Blueprint, request, jsonify, session, redirect, url_for, render_template
 import firebase_admin
@@ -14,7 +15,12 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 @bp.route('/login', methods=['GET'])
 def login():
     """Render the login page."""
-    return render_template('login.html')
+    return render_template(
+        'login.html',
+        firebase_api_key=os.environ.get("FIREBASE_API_KEY", ""),
+        firebase_project_id=os.environ.get("FIREBASE_PROJECT_ID", ""),
+        firebase_app_id=os.environ.get("FIREBASE_APP_ID", "")
+    )
 
 @bp.route('/verify-token', methods=['POST'])
 def verify_token():

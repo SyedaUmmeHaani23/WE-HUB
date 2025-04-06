@@ -3,21 +3,21 @@
 {% block title %}Women Entrepreneurs Hub - Empowering Women in Business{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
+<!-- Hero Section with Enhanced Animations -->
 <section class="hero-section">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <h1>Empower Your Business Journey</h1>
-                <p>A digital platform designed to help women entrepreneurs grow their businesses through e-commerce, community support, and innovative business tools.</p>
-                <div class="d-flex gap-3">
+                <h1 class="animate-on-scroll slide-in-left">Empower Your <span class="gradient-text">Business Journey</span></h1>
+                <p class="animate-on-scroll slide-in-left delay-1">A digital platform designed to help women entrepreneurs grow their businesses through e-commerce, community support, and innovative business tools.</p>
+                <div class="d-flex gap-3 animate-on-scroll slide-in-left delay-2">
                     <a href="/login" class="btn btn-light btn-lg unauthenticated">Get Started</a>
                     <a href="/dashboard" class="btn btn-light btn-lg authenticated" style="display: none;">Go to Dashboard</a>
                     <a href="#features" class="btn btn-outline-light btn-lg">Learn More</a>
                 </div>
             </div>
-            <div class="col-lg-6 d-none d-lg-block">
-                <svg width="500" height="400" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
+            <div class="col-lg-6 d-none d-lg-block animate-on-scroll slide-in-right">
+                <svg width="500" height="400" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg" class="float-element">
                     <defs>
                         <clipPath id="laptop-screen">
                             <rect x="125" y="75" width="250" height="150" rx="5" />
@@ -40,10 +40,10 @@
                         
                         <!-- Dashboard charts -->
                         <rect x="135" y="115" width="110" height="70" rx="3" fill="#2c3e50" />
-                        <polyline points="145,165 155,145 165,155 175,140 185,150 195,130 205,145 215,125 225,135" stroke="#2ecc71" stroke-width="2" fill="none" />
+                        <polyline points="145,165 155,145 165,155 175,140 185,150 195,130 205,145 215,125 225,135" stroke="#2ecc71" stroke-width="2" fill="none" class="pulse-element" />
                         
                         <rect x="255" y="115" width="110" height="70" rx="3" fill="#2c3e50" />
-                        <circle cx="310" cy="150" r="30" fill="none" stroke="#e74c3c" stroke-width="15" stroke-dasharray="60 40" />
+                        <circle cx="310" cy="150" r="30" fill="none" stroke="#e74c3c" stroke-width="15" stroke-dasharray="60 40" class="pulse-element" />
                         <circle cx="310" cy="150" r="30" fill="none" stroke="#3498db" stroke-width="15" stroke-dasharray="30 70" stroke-dashoffset="60" />
                         
                         <!-- Stats cards -->
@@ -54,23 +54,23 @@
                     
                     <!-- Women figures -->
                     <!-- Woman 1 -->
-                    <circle cx="80" cy="180" r="20" fill="#f39c12" /> <!-- Head -->
+                    <circle cx="80" cy="180" r="20" fill="#f39c12" class="float-element" /> <!-- Head -->
                     <path d="M80,200 L80,250 M60,220 L100,220 M70,270 L80,250 M90,270 L80,250" stroke="#f39c12" stroke-width="5" fill="none" /> <!-- Body and limbs -->
                     
                     <!-- Woman 2 -->
-                    <circle cx="420" cy="160" r="20" fill="#e74c3c" /> <!-- Head -->
+                    <circle cx="420" cy="160" r="20" fill="#e74c3c" class="float-element" /> <!-- Head -->
                     <path d="M420,180 L420,230 M400,200 L440,200 M410,250 L420,230 M430,250 L420,230" stroke="#e74c3c" stroke-width="5" fill="none" /> <!-- Body and limbs -->
                     
                     <!-- Connecting lines representing network -->
-                    <path d="M100,180 C150,150 200,160 250,150" stroke="#8e44ad" stroke-width="2" stroke-dasharray="5,5" fill="none" />
-                    <path d="M400,160 C350,130 300,140 250,150" stroke="#8e44ad" stroke-width="2" stroke-dasharray="5,5" fill="none" />
+                    <path d="M100,180 C150,150 200,160 250,150" stroke="#8e44ad" stroke-width="2" stroke-dasharray="5,5" fill="none" class="pulse-element" />
+                    <path d="M400,160 C350,130 300,140 250,150" stroke="#8e44ad" stroke-width="2" stroke-dasharray="5,5" fill="none" class="pulse-element" />
                     
                     <!-- Shopping cart and business elements -->
-                    <circle cx="60" cy="300" r="15" fill="#3498db" />
+                    <circle cx="60" cy="300" r="15" fill="#3498db" class="float-element" />
                     <rect x="40" y="285" width="40" height="5" rx="2" fill="#3498db" />
                     <path d="M50,300 L50,320 M70,300 L70,320 M50,320 L70,320" stroke="#3498db" stroke-width="3" fill="none" />
                     
-                    <rect x="440" y="280" width="30" height="40" rx="3" fill="#2ecc71" />
+                    <rect x="440" y="280" width="30" height="40" rx="3" fill="#2ecc71" class="float-element" />
                     <rect x="445" y="290" width="20" height="5" rx="1" fill="white" />
                     <rect x="445" y="300" width="20" height="5" rx="1" fill="white" />
                     <rect x="445" y="310" width="10" height="5" rx="1" fill="white" />
@@ -80,17 +80,17 @@
     </div>
 </section>
 
-<!-- Features Section -->
+<!-- Features Section with Animations -->
 <section class="py-5" id="features">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Designed for Women Entrepreneurs</h2>
+        <div class="text-center mb-5 animate-on-scroll fade-in">
+            <h2 class="fw-bold">Designed for <span class="gradient-text">Women Entrepreneurs</span></h2>
             <p class="lead">Comprehensive tools and features to help you grow your business</p>
         </div>
         
         <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card feature-card">
+            <div class="col-md-4 animate-on-scroll fade-in delay-1">
+                <div class="feature-card">
                     <div class="card-body text-center">
                         <div class="feature-icon">
                             <i class="fas fa-shopping-cart"></i>
@@ -101,8 +101,8 @@
                 </div>
             </div>
             
-            <div class="col-md-4">
-                <div class="card feature-card">
+            <div class="col-md-4 animate-on-scroll fade-in delay-2">
+                <div class="feature-card">
                     <div class="card-body text-center">
                         <div class="feature-icon">
                             <i class="fas fa-bullhorn"></i>
@@ -113,8 +113,8 @@
                 </div>
             </div>
             
-            <div class="col-md-4">
-                <div class="card feature-card">
+            <div class="col-md-4 animate-on-scroll fade-in delay-3">
+                <div class="feature-card">
                     <div class="card-body text-center">
                         <div class="feature-icon">
                             <i class="fas fa-users"></i>
@@ -125,8 +125,8 @@
                 </div>
             </div>
             
-            <div class="col-md-6">
-                <div class="card feature-card">
+            <div class="col-md-6 animate-on-scroll fade-in delay-4">
+                <div class="feature-card">
                     <div class="card-body text-center">
                         <div class="feature-icon">
                             <i class="fas fa-chart-line"></i>
@@ -137,8 +137,8 @@
                 </div>
             </div>
             
-            <div class="col-md-6">
-                <div class="card feature-card">
+            <div class="col-md-6 animate-on-scroll fade-in delay-5">
+                <div class="feature-card">
                     <div class="card-body text-center">
                         <div class="feature-icon">
                             <i class="fas fa-robot"></i>
@@ -152,41 +152,41 @@
     </div>
 </section>
 
-<!-- How It Works Section -->
-<section class="py-5 bg-we-primary text-white">
+<!-- How It Works Section with Animations -->
+<section class="py-5 bg-we-gradient-royal text-white">
     <div class="container">
-        <div class="text-center mb-5">
+        <div class="text-center mb-5 animate-on-scroll fade-in">
             <h2 class="fw-bold">How It Works</h2>
             <p class="lead">Simple steps to start your digital business journey</p>
         </div>
         
         <div class="row">
-            <div class="col-md-3 text-center mb-4 mb-md-0">
-                <div class="bg-white text-we-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+            <div class="col-md-3 text-center mb-4 mb-md-0 animate-on-scroll slide-in-left delay-1">
+                <div class="bg-white text-we-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center pulse-element" style="width: 80px; height: 80px;">
                     <i class="fas fa-user-plus fa-2x"></i>
                 </div>
                 <h4>Create Account</h4>
                 <p>Sign up and complete your business profile with all necessary details.</p>
             </div>
             
-            <div class="col-md-3 text-center mb-4 mb-md-0">
-                <div class="bg-white text-we-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+            <div class="col-md-3 text-center mb-4 mb-md-0 animate-on-scroll slide-in-left delay-2">
+                <div class="bg-white text-we-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center pulse-element" style="width: 80px; height: 80px;">
                     <i class="fas fa-store fa-2x"></i>
                 </div>
                 <h4>Set Up Shop</h4>
                 <p>List your products or services with descriptions, images, and pricing.</p>
             </div>
             
-            <div class="col-md-3 text-center mb-4 mb-md-0">
-                <div class="bg-white text-we-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+            <div class="col-md-3 text-center mb-4 mb-md-0 animate-on-scroll slide-in-left delay-3">
+                <div class="bg-white text-we-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center pulse-element" style="width: 80px; height: 80px;">
                     <i class="fas fa-bullhorn fa-2x"></i>
                 </div>
                 <h4>Market & Connect</h4>
                 <p>Use our tools to promote your business and connect with customers.</p>
             </div>
             
-            <div class="col-md-3 text-center">
-                <div class="bg-white text-we-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+            <div class="col-md-3 text-center animate-on-scroll slide-in-left delay-4">
+                <div class="bg-white text-we-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center pulse-element" style="width: 80px; height: 80px;">
                     <i class="fas fa-chart-pie fa-2x"></i>
                 </div>
                 <h4>Analyze & Grow</h4>
@@ -196,17 +196,17 @@
     </div>
 </section>
 
-<!-- Testimonials -->
+<!-- Testimonials with Animations -->
 <section class="py-5">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Success Stories</h2>
+        <div class="text-center mb-5 animate-on-scroll fade-in">
+            <h2 class="fw-bold">Success <span class="gradient-text">Stories</span></h2>
             <p class="lead">Hear from women entrepreneurs who have transformed their businesses</p>
         </div>
         
         <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
+            <div class="col-md-4 mb-4 animate-on-scroll slide-in-right delay-1">
+                <div class="card h-100 testimonial-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center mb-3">
                             <div class="flex-shrink-0">
@@ -228,8 +228,8 @@
                 </div>
             </div>
             
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
+            <div class="col-md-4 mb-4 animate-on-scroll slide-in-right delay-2">
+                <div class="card h-100 testimonial-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center mb-3">
                             <div class="flex-shrink-0">
@@ -251,8 +251,8 @@
                 </div>
             </div>
             
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
+            <div class="col-md-4 mb-4 animate-on-scroll slide-in-right delay-3">
+                <div class="card h-100 testimonial-card">
                     <div class="card-body">
                         <div class="d-flex align-items-center mb-3">
                             <div class="flex-shrink-0">
@@ -277,19 +277,107 @@
     </div>
 </section>
 
-<!-- CTA Section -->
-<section class="py-5 bg-we-gradient text-white">
+<!-- CTA Section with Animations -->
+<section class="py-5 bg-we-gradient-sunset text-white">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-8 mx-auto text-center">
+            <div class="col-lg-8 mx-auto text-center animate-on-scroll fade-in">
                 <h2 class="fw-bold mb-4">Ready to Transform Your Business?</h2>
                 <p class="lead mb-4">Join thousands of women entrepreneurs already growing their businesses with WE Hub's digital tools and supportive community.</p>
                 <div class="d-flex justify-content-center gap-3">
-                    <a href="/login" class="btn btn-light btn-lg unauthenticated">Sign Up Free</a>
-                    <a href="/dashboard" class="btn btn-light btn-lg authenticated" style="display: none;">Go to Dashboard</a>
-                    <a href="#features" class="btn btn-outline-light btn-lg">Learn More</a>
+                    <a href="/login" class="btn btn-light btn-lg unauthenticated pulse-element">Get Started Now</a>
+                    <a href="/dashboard" class="btn btn-light btn-lg authenticated pulse-element" style="display: none;">Go to Dashboard</a>
                 </div>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section with Counters -->
+<section class="py-5 stats-section">
+    <div class="container">
+        <div class="text-center mb-5 animate-on-scroll fade-in">
+            <h2 class="fw-bold">Our <span class="gradient-text">Impact</span></h2>
+            <p class="lead">Empowering women entrepreneurs around the world</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-3 animate-on-scroll fade-in delay-1">
+                <div class="stats-card text-center">
+                    <div class="stats-icon"><i class="fas fa-users"></i></div>
+                    <div class="stats-value" data-count="10000">0</div>
+                    <div class="stats-label">Active Members</div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 animate-on-scroll fade-in delay-2">
+                <div class="stats-card text-center">
+                    <div class="stats-icon"><i class="fas fa-store"></i></div>
+                    <div class="stats-value" data-count="5000">0</div>
+                    <div class="stats-label">Businesses</div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 animate-on-scroll fade-in delay-3">
+                <div class="stats-card text-center">
+                    <div class="stats-icon"><i class="fas fa-globe"></i></div>
+                    <div class="stats-value" data-count="45">0</div>
+                    <div class="stats-label">Countries</div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 animate-on-scroll fade-in delay-4">
+                <div class="stats-card text-center">
+                    <div class="stats-icon"><i class="fas fa-comments"></i></div>
+                    <div class="stats-value" data-count="25000">0</div>
+                    <div class="stats-label">Community Posts</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Global Presence Map Section -->
+<section class="py-5 bg-we-gradient-colorful text-white">
+    <div class="container">
+        <div class="text-center mb-5 animate-on-scroll fade-in">
+            <h2 class="fw-bold">Global Community</h2>
+            <p class="lead">Connecting women entrepreneurs across borders</p>
+        </div>
+        
+        <div class="animate-on-scroll fade-in">
+            <svg width="100%" height="400" viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" class="world-map">
+                <!-- Simplified world map -->
+                <path d="M150,250 Q300,200 450,250 T750,300 T1050,250" stroke="rgba(255,255,255,0.3)" stroke-width="30" fill="none" />
+                
+                <!-- Connection points/nodes -->
+                <circle cx="200" cy="220" r="8" fill="white" class="pulse-element" />
+                <circle cx="350" cy="240" r="8" fill="white" class="pulse-element" />
+                <circle cx="500" cy="260" r="8" fill="white" class="pulse-element" />
+                <circle cx="650" cy="280" r="8" fill="white" class="pulse-element" />
+                <circle cx="800" cy="270" r="8" fill="white" class="pulse-element" />
+                <circle cx="950" cy="250" r="8" fill="white" class="pulse-element" />
+                <circle cx="1100" cy="230" r="8" fill="white" class="pulse-element" />
+                
+                <!-- Connection lines -->
+                <line x1="200" y1="220" x2="350" y2="240" stroke="rgba(255,255,255,0.6)" stroke-width="2" />
+                <line x1="350" y1="240" x2="500" y2="260" stroke="rgba(255,255,255,0.6)" stroke-width="2" />
+                <line x1="500" y1="260" x2="650" y2="280" stroke="rgba(255,255,255,0.6)" stroke-width="2" />
+                <line x1="650" y1="280" x2="800" y2="270" stroke="rgba(255,255,255,0.6)" stroke-width="2" />
+                <line x1="800" y1="270" x2="950" y2="250" stroke="rgba(255,255,255,0.6)" stroke-width="2" />
+                <line x1="950" y1="250" x2="1100" y2="230" stroke="rgba(255,255,255,0.6)" stroke-width="2" />
+                
+                <!-- Region labels -->
+                <text x="200" y="200" fill="white" font-size="14" text-anchor="middle">Americas</text>
+                <text x="500" y="240" fill="white" font-size="14" text-anchor="middle">Europe</text>
+                <text x="800" y="250" fill="white" font-size="14" text-anchor="middle">Asia</text>
+                <text x="950" y="230" fill="white" font-size="14" text-anchor="middle">Australia</text>
+                <text x="650" y="310" fill="white" font-size="14" text-anchor="middle">Africa</text>
+                
+                <!-- Stats labels -->
+                <text x="350" y="380" fill="white" font-size="18" text-anchor="middle">10,000+ Entrepreneurs</text>
+                <text x="850" y="380" fill="white" font-size="18" text-anchor="middle">45+ Countries</text>
+            </svg>
         </div>
     </div>
 </section>
