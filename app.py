@@ -132,6 +132,7 @@ try:
     from routes import auth, dashboard, profile, e_commerce, community, events, business_tools, api
     import chatbot
     import ecommerce
+    import mood_tracker
     
     # Register blueprints
     logger.info("Registering blueprints")
@@ -145,6 +146,7 @@ try:
     app.register_blueprint(api.bp)
     app.register_blueprint(chatbot.chatbot_bp)
     app.register_blueprint(ecommerce.ecommerce_bp)
+    app.register_blueprint(mood_tracker.mood_tracker_bp)
     logger.info("All blueprints registered successfully")
 except Exception as e:
     logger.error(f"Error registering blueprints: {e}")

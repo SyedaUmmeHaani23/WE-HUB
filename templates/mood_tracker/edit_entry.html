@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Mood Entry - {{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Edit Mood Entry for {{ entry.date.strftime('%B %d, %Y') }}</h1>
+        <a href="{{ url_for('mood_tracker.index') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <div class="card bg-dark">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('mood_tracker.edit_entry', entry_id=entry.id) }}">
+                <div class="row">
+                    <!-- Mood Section -->
+                    <div class="col-md-6 mb-4">
+                        <h3 class="mb-3">How were you feeling?</h3>
+                        <div class="mood-emoji-selector mb-3">
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                {% for preset in mood_presets %}
+                                <div class="emoji-option form-check">
+                                    <input type="radio" class="form-check-input" 
+                                           name="mood_emoji" id="mood_emoji_{{ loop.index }}" 
+                                           value="{{ preset.emoji }}" 
+                                           {% if entry.mood_emoji == preset.emoji %}checked{% endif %}
+                                           data-label="{{ preset.label }}">
+                                    <label class="form-check-label" for="mood_emoji_{{ loop.index }}">
+                                        <div class="emoji-display-md">{{ preset.emoji }}</div>
+                                        <div class="emoji-label">{{ preset.label }}</div>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="mood_label" class="form-label">Mood Label (optional)</label>
+                            <input type="text" class="form-control" id="mood_label" name="mood_label" 
+                                   placeholder="e.g., Feeling motivated!" 
+                                   value="{{ entry.mood_label }}" maxlength="30">
+                        </div>
+                    </div>
+                    
+                    <!-- Productivity Section -->
+                    <div class="col-md-6 mb-4">
+                        <h3 class="mb-3">How productive were you?</h3>
+                        <div class="productivity-emoji-selector mb-3">
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                {% for preset in productivity_presets %}
+                                <div class="emoji-option form-check">
+                                    <input type="radio" class="form-check-input" 
+                                           name="productivity_emoji" id="productivity_emoji_{{ loop.index }}" 
+                                           value="{{ preset.emoji }}" 
+                                           {% if entry.productivity_emoji == preset.emoji %}checked{% endif %}
+                                           data-value="{{ preset.value }}">
+                                    <label class="form-check-label" for="productivity_emoji_{{ loop.index }}">
+                                        <div class="emoji-display-md">{{ preset.emoji }}</div>
+                                        <div class="emoji-label">{{ preset.label }}</div>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="productivity_level" class="form-label">Productivity Level (1-10)</label>
+                            <div class="d-flex align-items-center">
+                                <input type="range" class="form-range flex-grow-1" id="productivity_level" 
+                                       name="productivity_level" min="1" max="10" step="1" 
+                                       value="{{ entry.productivity_level }}">
+                                <span class="ms-2 fs-4" id="productivity_level_display">
+                                    {{ entry.productivity_level }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Notes Section -->
+                    <div class="col-12 mb-4">
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notes (optional)</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="4" 
+                                      placeholder="What was on your mind that day? Any accomplishments or challenges?">{{ entry.notes }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                        <button type="button" class="btn btn-danger" 
+                                data-bs-toggle="modal" data-bs-target="#deleteEntryModal">
+                            <i class="fas fa-trash"></i> Delete Entry
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteEntryModal" tabindex="-1" 
+         aria-labelledby="deleteEntryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteEntryModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this entry from {{ entry.date.strftime('%B %d, %Y') }}?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ url_for('mood_tracker.delete_entry', entry_id=entry.id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update productivity level display when range input changes
+    const productivityLevelInput = document.getElementById('productivity_level');
+    const productivityLevelDisplay = document.getElementById('productivity_level_display');
+    
+    if (productivityLevelInput && productivityLevelDisplay) {
+        productivityLevelInput.addEventListener('input', function() {
+            productivityLevelDisplay.textContent = this.value;
+        });
+    }
+    
+    // Set productivity level when emoji is selected
+    const productivityEmojiInputs = document.querySelectorAll('[name="productivity_emoji"]');
+    productivityEmojiInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            if (this.checked && this.dataset.value && productivityLevelInput) {
+                productivityLevelInput.value = this.dataset.value;
+                if (productivityLevelDisplay) {
+                    productivityLevelDisplay.textContent = this.dataset.value;
+                }
+            }
+        });
+    });
+});
+</script>
+<style>
+.emoji-display-md {
+    font-size: 36px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.emoji-option {
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    width: calc(25% - 8px);
+}
+
+.emoji-option .form-check-input {
+    position: absolute;
+    opacity: 0;
+}
+
+.emoji-option .form-check-label {
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.emoji-option .form-check-input:checked + .form-check-label {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    border-color: var(--bs-primary);
+}
+
+.emoji-option .emoji-label {
+    margin-top: 5px;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Make range slider more visible in dark theme */
+.form-range::-webkit-slider-thumb {
+    background: var(--bs-primary);
+}
+.form-range::-moz-range-thumb {
+    background: var(--bs-primary);
+}
+.form-range::-ms-thumb {
+    background: var(--bs-primary);
+}
+</style>
+{% endblock %}

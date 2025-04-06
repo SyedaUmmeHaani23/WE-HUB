@@ -2,6 +2,7 @@
 Database models for the Women Entrepreneurs Hub application.
 """
 from datetime import datetime
+import json
 from app import db
 from flask_login import UserMixin
 
@@ -150,3 +151,39 @@ class OrderItem(db.Model):
 
     def __repr__(self):
         return f'<OrderItem {self.id}>'
+
+class MoodTracker(db.Model):
+    """Mood tracker model for tracking daily moods and productivity."""
+    id = db.Column(db.Integer, primary_key=True)
+    firebase_id = db.Column(db.String(128), unique=True, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    mood_emoji = db.Column(db.String(10), nullable=False)  # Store the emoji character or code
+    mood_label = db.Column(db.String(30), nullable=True)   # Optional user-defined label for the mood
+    productivity_level = db.Column(db.Integer, nullable=False)  # Scale of 1-10
+    productivity_emoji = db.Column(db.String(10), nullable=False)  # Store the emoji character or code
+    notes = db.Column(db.Text, nullable=True)  # Optional notes about the day
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = db.relationship('User', backref=db.backref('mood_entries', lazy=True))
+
+    def __repr__(self):
+        return f'<MoodTracker {self.date} - {self.mood_emoji}>'
+
+class MoodEmojiPreset(db.Model):
+    """Custom emoji presets for the mood tracker."""
+    id = db.Column(db.Integer, primary_key=True)
+    firebase_id = db.Column(db.String(128), unique=True, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    category = db.Column(db.String(20), nullable=False)  # 'mood' or 'productivity'
+    emoji = db.Column(db.String(10), nullable=False)  # The emoji character or code
+    label = db.Column(db.String(30), nullable=False)  # User-defined label for this emoji
+    value = db.Column(db.Integer, nullable=True)  # Numeric value for analytics (e.g., 1-10 for productivity)
+    is_default = db.Column(db.Boolean, default=False)  # Whether this is a default preset
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref=db.backref('emoji_presets', lazy=True))
+
+    def __repr__(self):
+        return f'<MoodEmojiPreset {self.category} - {self.emoji} ({self.label})>'

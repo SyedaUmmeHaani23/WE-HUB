@@ -50,7 +50,7 @@ def forum():
             post.comment_count = ForumComment.query.filter_by(post_id=post.id).count()
         
         return render_template(
-            'forum.html',
+            'community/forum.html',
             posts=posts,
             category=category,
             pagination=pagination,
@@ -60,7 +60,7 @@ def forum():
     except Exception as e:
         logging.error(f"Error loading forum page: {e}")
         return render_template(
-            'forum.html',
+            'community/forum.html',
             posts=[],
             category=category,
             error="An error occurred while loading forum posts.",
@@ -83,7 +83,7 @@ def view_post(post_id):
             comment.author = User.query.get(comment.user_id)
         
         return render_template(
-            'forum-post.html',
+            'community/forum_post.html',
             post=post,
             comments=comments,
             user_data=session.get('user_data')
@@ -102,7 +102,7 @@ def new_post_form():
         return redirect(url_for('auth.login'))
     
     return render_template(
-        'new-post.html',
+        'community/create_post.html',
         user_data=user_data
     )
 
@@ -318,6 +318,6 @@ def get_community_stats():
 def mentorship():
     """View the mentorship program page."""
     return render_template(
-        'mentorship.html',
+        'community/mentorship.html',
         user_data=session.get('user_data')
     )

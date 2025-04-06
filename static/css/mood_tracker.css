@@ -1,0 +1,154 @@
+/* Mood Tracker Styles */
+
+/* Emoji Display Styles */
+.emoji-display {
+    font-size: 48px;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.emoji-display-md {
+    font-size: 36px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.emoji-display-sm {
+    font-size: 24px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Calendar Styles */
+.mood-calendar {
+    margin: 20px 0;
+}
+
+.day-header {
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    color: var(--bs-gray-400);
+}
+
+.day {
+    min-height: 100px;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.day:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.day.empty {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.day-number {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 14px;
+    color: var(--bs-gray-400);
+}
+
+.day-mood {
+    font-size: 24px;
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* Emoji Selector Styles */
+.emoji-option {
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    width: calc(25% - 8px);
+}
+
+.emoji-option .form-check-input {
+    position: absolute;
+    opacity: 0;
+}
+
+.emoji-option .form-check-label {
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.emoji-option .form-check-input:checked + .form-check-label {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    border-color: var(--bs-primary);
+}
+
+.emoji-option .emoji-label {
+    margin-top: 5px;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Preset Item Styles */
+.preset-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    width: 100%;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+.preset-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.preset-label {
+    font-weight: 500;
+}
+
+.preset-value {
+    font-size: 12px;
+    color: var(--bs-secondary);
+}
+
+/* Analytics Insights Styles */
+.insight-item {
+    transition: all 0.3s ease;
+}
+
+.insight-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.insight-item h4 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+/* Form Range Styling */
+.form-range::-webkit-slider-thumb {
+    background: var(--bs-primary);
+}
+.form-range::-moz-range-thumb {
+    background: var(--bs-primary);
+}
+.form-range::-ms-thumb {
+    background: var(--bs-primary);
+}

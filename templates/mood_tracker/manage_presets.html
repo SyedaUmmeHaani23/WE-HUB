@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Emoji Presets | WE Hub{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold">Manage Emoji Presets</h1>
+                <p class="lead">Customize your mood and productivity emoji sets to track your day your way.</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{{ url_for('mood_tracker.index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Mood Emoji Presets -->
+            <div class="col-md-6 mb-4">
+                <div class="card bg-dark border-0">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="mb-0">Mood Emoji Presets</h4>
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addMoodPresetModal">
+                                <i class="fas fa-plus me-1"></i> Add New
+                            </button>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-dark table-hover align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Emoji</th>
+                                                <th>Label</th>
+                                                <th>Default</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for preset in mood_presets %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="emoji-display-sm">{{ preset.emoji }}</div>
+                                                    </td>
+                                                    <td>{{ preset.label }}</td>
+                                                    <td>
+                                                        {% if preset.is_default %}
+                                                            <span class="badge bg-info">Default</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if not preset.is_default %}
+                                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                                    onclick="confirmDelete('{{ url_for('mood_tracker.delete_preset', preset_id=preset.id) }}')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        {% else %}
+                                                            <span class="text-muted">—</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% else %}
+                                                <tr>
+                                                    <td colspan="4" class="text-center py-4">
+                                                        <p class="text-muted mb-0">No custom mood presets found.</p>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Productivity Emoji Presets -->
+            <div class="col-md-6 mb-4">
+                <div class="card bg-dark border-0">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="mb-0">Productivity Emoji Presets</h4>
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addProductivityPresetModal">
+                                <i class="fas fa-plus me-1"></i> Add New
+                            </button>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-dark table-hover align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Emoji</th>
+                                                <th>Label</th>
+                                                <th>Value</th>
+                                                <th>Default</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for preset in productivity_presets %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="emoji-display-sm">{{ preset.emoji }}</div>
+                                                    </td>
+                                                    <td>{{ preset.label }}</td>
+                                                    <td>{{ preset.value }}/10</td>
+                                                    <td>
+                                                        {% if preset.is_default %}
+                                                            <span class="badge bg-info">Default</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if not preset.is_default %}
+                                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                                    onclick="confirmDelete('{{ url_for('mood_tracker.delete_preset', preset_id=preset.id) }}')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        {% else %}
+                                                            <span class="text-muted">—</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% else %}
+                                                <tr>
+                                                    <td colspan="5" class="text-center py-4">
+                                                        <p class="text-muted mb-0">No custom productivity presets found.</p>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reset Presets Section -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card bg-dark border-0">
+                    <div class="card-body">
+                        <h4 class="mb-3">Reset Options</h4>
+                        <p>You can reset your emoji presets to default values if needed.</p>
+                        <form method="post" action="{{ url_for('mood_tracker.reset_presets') }}" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="btn btn-warning" onclick="return confirm('Are you sure you want to reset all emoji presets to default values? This cannot be undone.');">
+                                <i class="fas fa-redo-alt me-1"></i> Reset to Default Presets
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Add Mood Preset Modal -->
+<div class="modal fade" id="addMoodPresetModal" tabindex="-1" aria-labelledby="addMoodPresetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <form method="post" action="{{ url_for('mood_tracker.add_preset') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <input type="hidden" name="category" value="mood"/>
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title" id="addMoodPresetModalLabel">Add New Mood Emoji</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="moodEmoji" class="form-label">Emoji</label>
+                        <input type="text" class="form-control" id="moodEmoji" name="emoji" required>
+                        <div class="form-text">Enter a single emoji character (e.g. 😊)</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="moodLabel" class="form-label">Label</label>
+                        <input type="text" class="form-control" id="moodLabel" name="label" required>
+                        <div class="form-text">Short description for this mood (e.g. "Happy")</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Emoji</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Productivity Preset Modal -->
+<div class="modal fade" id="addProductivityPresetModal" tabindex="-1" aria-labelledby="addProductivityPresetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <form method="post" action="{{ url_for('mood_tracker.add_preset') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <input type="hidden" name="category" value="productivity"/>
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title" id="addProductivityPresetModalLabel">Add New Productivity Preset</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="productivityEmoji" class="form-label">Emoji</label>
+                        <input type="text" class="form-control" id="productivityEmoji" name="emoji" required>
+                        <div class="form-text">Enter a single emoji character (e.g. 🚀)</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productivityLabel" class="form-label">Label</label>
+                        <input type="text" class="form-control" id="productivityLabel" name="label" required>
+                        <div class="form-text">Short description (e.g. "Super Productive")</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productivityValue" class="form-label">Productivity Value (1-10)</label>
+                        <input type="number" class="form-control" id="productivityValue" name="value" min="1" max="10" required>
+                        <div class="form-text">Numeric value from 1 to 10 representing the productivity level</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Preset</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this custom emoji preset? This action cannot be undone.
+            </div>
+            <div class="modal-footer border-top-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="#" id="confirmDeleteBtn" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function confirmDelete(deleteUrl) {
+        document.getElementById('confirmDeleteBtn').href = deleteUrl;
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
+    }
+</script>
+{% endblock %}
