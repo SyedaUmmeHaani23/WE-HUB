@@ -51,9 +51,43 @@ logger.info(f"Firebase environment variables: PROJECT_ID: {firebase_project_id i
 
 # We'll initialize Firebase Admin in a simpler way and with better error handling
 firestore_db = None
+bucket = None
 
-# Deferring Firebase Admin initialization to prevent startup issues
-# It will be initialized when first needed
+# Initialize Firebase Admin
+# We'll defer this to a utility function to avoid circular imports
+def initialize_firebase():
+    global firestore_db, bucket
+    try:
+        import firebase_admin
+        from firebase_admin import credentials, firestore, storage
+        
+        if firebase_project_id:
+            logger.info("Initializing Firebase Admin")
+            # Initialize with explicit project ID
+            options = {
+                'projectId': firebase_project_id,
+            }
+            
+            # Check if app is already initialized
+            try:
+                firebase_app = firebase_admin.get_app()
+            except ValueError:
+                # If not initialized, initialize it
+                firebase_app = firebase_admin.initialize_app(options=options)
+                
+            # Get Firestore and Storage clients
+            firestore_db = firestore.client()
+            bucket = storage.bucket(f"{firebase_project_id}.appspot.com")
+            logger.info("Firebase Admin initialized successfully")
+            return True
+        return False
+    except Exception as e:
+        logger.error(f"Error initializing Firebase Admin: {e}")
+        return False
+
+# Initialize Firebase if credentials exist
+if firebase_project_id:
+    initialize_firebase()
 
 # Create database tables
 try:
@@ -69,6 +103,8 @@ logger.info("Importing routes")
 # Import routes
 try:
     from routes import auth, dashboard, profile, e_commerce, community, events, business_tools, api
+    import chatbot
+    import ecommerce
     
     # Register blueprints
     logger.info("Registering blueprints")
@@ -80,6 +116,8 @@ try:
     app.register_blueprint(events.bp)
     app.register_blueprint(business_tools.bp)
     app.register_blueprint(api.bp)
+    app.register_blueprint(chatbot.chatbot_bp)
+    app.register_blueprint(ecommerce.ecommerce_bp)
     logger.info("All blueprints registered successfully")
 except Exception as e:
     logger.error(f"Error registering blueprints: {e}")

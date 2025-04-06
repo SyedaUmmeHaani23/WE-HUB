@@ -2,11 +2,19 @@ import logging
 from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_required, current_user
 from models import Product
-from app import db, bucket
+from app import db
 import uuid
 import os
 from datetime import datetime
 from werkzeug.utils import secure_filename
+
+# Import Firebase storage bucket from app.py
+try:
+    from app import bucket, firestore_db
+except ImportError:
+    # For when the app is starting and Firebase isn't fully initialized
+    bucket = None
+    firestore_db = None
 
 ecommerce_bp = Blueprint('ecommerce', __name__, url_prefix='/shop')
 
@@ -225,18 +233,24 @@ def upload_product_image(product_id):
         filename = f"{uuid.uuid4().hex}_{secure_filename(image_file.filename)}"
         file_path = f"products/{product_id}/{filename}"
         
-        # Upload image to Firebase Storage
-        blob = bucket.blob(file_path)
-        blob.upload_from_string(
-            image_file.read(),
-            content_type=image_file.content_type
-        )
-        
-        # Make image publicly accessible
-        blob.make_public()
-        
-        # Get public URL
-        image_url = blob.public_url
+        # Upload image to Firebase Storage if bucket is available
+        if bucket:
+            blob = bucket.blob(file_path)
+            blob.upload_from_string(
+                image_file.read(),
+                content_type=image_file.content_type
+            )
+            
+            # Make image publicly accessible
+            blob.make_public()
+            
+            # Get public URL
+            image_url = blob.public_url
+        else:
+            # For development without Firebase Storage
+            # Save to a temporary URL (in a real app, we'd use local storage)
+            image_url = f"https://placeholder.co/400x300?text={filename}"
+            logging.warning("Firebase Storage not configured, using placeholder image")
         
         # Add image URL to product
         product.images.append(image_url)
@@ -279,7 +293,7 @@ def remove_product_image(product_id):
             
             # Try to delete from Firebase Storage if possible
             try:
-                if image_url.startswith('https://storage.googleapis.com'):
+                if bucket and image_url.startswith('https://storage.googleapis.com'):
                     path = image_url.split('/', 4)[-1]
                     bucket.delete_blob(path)
             except Exception as e:
