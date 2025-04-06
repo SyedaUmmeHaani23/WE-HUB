@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Product - {{ product.name }} - WE Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h1 class="h3 mb-0">Edit Product</h1>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/shop/edit-product/{{ product.id }}">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Product Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ product.name }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required>{{ product.description }}</textarea>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="price" class="form-label">Price ($) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="price" name="price" min="0.01" step="0.01" value="{{ product.price }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category">
+                                    <option value="" {% if not product.category %}selected{% endif %}>Select a category</option>
+                                    <option value="Arts & Crafts" {% if product.category == 'Arts & Crafts' %}selected{% endif %}>Arts & Crafts</option>
+                                    <option value="Beauty & Personal Care" {% if product.category == 'Beauty & Personal Care' %}selected{% endif %}>Beauty & Personal Care</option>
+                                    <option value="Clothing & Fashion" {% if product.category == 'Clothing & Fashion' %}selected{% endif %}>Clothing & Fashion</option>
+                                    <option value="Education & Training" {% if product.category == 'Education & Training' %}selected{% endif %}>Education & Training</option>
+                                    <option value="Food & Beverage" {% if product.category == 'Food & Beverage' %}selected{% endif %}>Food & Beverage</option>
+                                    <option value="Health & Wellness" {% if product.category == 'Health & Wellness' %}selected{% endif %}>Health & Wellness</option>
+                                    <option value="Home Decor & Furniture" {% if product.category == 'Home Decor & Furniture' %}selected{% endif %}>Home Decor & Furniture</option>
+                                    <option value="Professional Services" {% if product.category == 'Professional Services' %}selected{% endif %}>Professional Services</option>
+                                    <option value="Technology" {% if product.category == 'Technology' %}selected{% endif %}>Technology</option>
+                                    <option value="Other" {% if product.category == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="in_stock" name="in_stock" {% if product.in_stock %}checked{% endif %}>
+                            <label class="form-check-label" for="in_stock">Product is in stock</label>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="/shop/my-products" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Product Images Section -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h3 class="h4 mb-0">Product Images</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4" id="image-gallery">
+                        {% if product.images|length > 0 %}
+                            {% for image_url in product.images %}
+                            <div class="col-md-4 col-sm-6 mb-3">
+                                <div class="card h-100">
+                                    <img src="{{ image_url }}" class="card-img-top" alt="Product image">
+                                    <div class="card-body text-center">
+                                        <button class="btn btn-sm btn-danger remove-image" data-image-url="{{ image_url }}">
+                                            <i class="fas fa-trash-alt"></i> Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="col-12 text-center py-4">
+                                <i class="fas fa-image fa-3x text-muted mb-3"></i>
+                                <p>No images have been uploaded yet.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <form id="image-upload-form" data-product-id="{{ product.id }}">
+                        <div class="mb-3">
+                            <label for="product-image" class="form-label">Upload New Image</label>
+                            <input class="form-control" type="file" id="product-image" accept="image/*">
+                            <div class="form-text">Maximum file size: 5MB. Supported formats: JPG, JPEG, PNG, GIF.</div>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" id="upload-image-btn" class="btn btn-primary">
+                                <i class="fas fa-upload me-1"></i> Upload Image
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h3 class="h5 mb-0">Product Preview</h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-center mb-3">
+                        <a href="/shop/product/{{ product.id }}" class="btn btn-outline-primary" target="_blank">
+                            <i class="fas fa-eye me-1"></i> View Product Page
+                        </a>
+                    </div>
+                    
+                    <div class="alert alert-light mb-0">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-lightbulb fa-2x text-warning"></i>
+                            </div>
+                            <div>
+                                <h5>Tip: Optimize Your Listing</h5>
+                                <p class="mb-0">After uploading images and updating your product details, view your product page to ensure everything looks good to potential customers.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/ecommerce.js"></script>
+{% endblock %}

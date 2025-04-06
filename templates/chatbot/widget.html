@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block title %}Chatbot Widget - WE Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h1 class="h3 mb-0">WE Hub Assistant</h1>
+                </div>
+                <div class="card-body">
+                    <div class="chatbot-window-embed">
+                        <div class="chatbot-messages-embed" id="chatbot-messages-embed" style="height: 400px; overflow-y: auto; border: 1px solid #e9ecef; border-radius: 0.25rem; padding: 1rem; margin-bottom: 1rem;">
+                            <div class="chatbot-message bot-message">
+                                <div class="message-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-text">
+                                    Hello! I'm your WE Hub assistant. How can I help you today?
+                                </div>
+                            </div>
+                            <div class="chatbot-message bot-message">
+                                <div class="message-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-text">
+                                    You can ask me about setting up your business profile, managing products, using our community features, or any other questions about the platform.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chatbot-input-container-embed d-flex">
+                            <input type="text" id="chatbot-input-embed" class="form-control me-2" placeholder="Type your question...">
+                            <button id="chatbot-send-embed" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-transparent">
+                    <h3 class="h5 mb-0">FAQ - Common Questions</h3>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                    How do I set up my business profile?
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    To set up your business profile, go to your Profile page after logging in and fill in your business details in the "Business Details" tab. Add information such as your business name, description, category, location, and contact information.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    How do I add products to my shop?
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    You can add products by navigating to Shop > My Products > Add Product. Fill in the required details such as product name, description, price, and category. After creating the product, you can add images on the edit page.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    How do payments work on the platform?
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    We support Google Pay for seamless and secure transactions. Payment processing is handled securely through our platform, and funds are transferred directly to your linked account.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                    What community features are available?
+                                </button>
+                            </h2>
+                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Our community features include forums for discussions and an events calendar for networking opportunities. You can create and participate in discussions in the Community section, and attend or host virtual and in-person events.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const messageContainer = document.getElementById('chatbot-messages-embed');
+        const messageInput = document.getElementById('chatbot-input-embed');
+        const sendButton = document.getElementById('chatbot-send-embed');
+        
+        // Send message on button click
+        if (sendButton) {
+            sendButton.addEventListener('click', sendMessage);
+        }
+        
+        // Send message on Enter key
+        if (messageInput) {
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        }
+        
+        // Function to send message
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            
+            if (!message) {
+                return;
+            }
+            
+            // Add user message to chat
+            addUserMessage(message);
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Send message to backend
+            fetch('/chatbot/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide typing indicator
+                hideTypingIndicator();
+                
+                if (data.success) {
+                    // Add bot response to chat
+                    addBotMessage(data.response);
+                } else {
+                    addBotMessage("Sorry, I'm having trouble understanding that right now. Please try again later.");
+                }
+            })
+            .catch(error => {
+                console.error('Error sending message:', error);
+                
+                // Hide typing indicator
+                hideTypingIndicator();
+                
+                // Add error message
+                addBotMessage("Sorry, there was an error processing your request. Please try again later.");
+            });
+        }
+        
+        // Function to add user message to chat
+        function addUserMessage(message) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'chatbot-message user-message';
+            messageElement.innerHTML = `<div class="message-text">${message}</div>`;
+            
+            messageContainer.appendChild(messageElement);
+            
+            // Scroll to bottom
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+        
+        // Function to add bot message to chat
+        function addBotMessage(message) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'chatbot-message bot-message';
+            messageElement.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-text">${message}</div>
+            `;
+            
+            messageContainer.appendChild(messageElement);
+            
+            // Scroll to bottom
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+        
+        // Function to show typing indicator
+        function showTypingIndicator() {
+            const indicatorElement = document.createElement('div');
+            indicatorElement.className = 'chatbot-message bot-message typing-indicator';
+            indicatorElement.id = 'typing-indicator-embed';
+            indicatorElement.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-text">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+            
+            messageContainer.appendChild(indicatorElement);
+            
+            // Scroll to bottom
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+        
+        // Function to hide typing indicator
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator-embed');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ event.title }} - WE Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/community/events">Events</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ event.title }}</li>
+        </ol>
+    </nav>
+    
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-8">
+                    <h1 class="mb-3">{{ event.title }}</h1>
+                    
+                    <div class="d-flex flex-wrap align-items-center mb-4">
+                        <div class="me-3 mb-2">
+                            <span class="badge {% if event.is_virtual %}bg-info{% else %}bg-secondary{% endif %} p-2">
+                                {% if event.is_virtual %}
+                                <i class="fas fa-video me-1"></i> Virtual Event
+                                {% else %}
+                                <i class="fas fa-users me-1"></i> In-Person Event
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <div class="me-3 mb-2">
+                            <i class="fas fa-calendar-alt me-1"></i>
+                            {{ event.date or 'Date TBA' }}
+                        </div>
+                        
+                        <div class="me-3 mb-2">
+                            <i class="fas fa-clock me-1"></i>
+                            {{ event.time or 'Time TBA' }}
+                        </div>
+                        
+                        {% if not event.is_virtual and event.location %}
+                        <div class="mb-2">
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            {{ event.location }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>About this event</h5>
+                        <p>{{ event.description }}</p>
+                    </div>
+                    
+                    {% if event.is_virtual and event.meeting_link %}
+                    <div class="alert alert-info mb-4">
+                        <h5><i class="fas fa-link me-2"></i> Meeting Link</h5>
+                        <p class="mb-2">Join this virtual event at the scheduled time using the link below:</p>
+                        <a href="{{ event.meeting_link }}" target="_blank" class="btn btn-primary">
+                            <i class="fas fa-video me-1"></i> Join Meeting
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex flex-wrap">
+                        <button class="btn btn-outline-primary me-2 mb-2 add-to-calendar"
+                                data-event-title="{{ event.title }}"
+                                data-event-date="{{ event.date }}"
+                                data-event-time="{{ event.time }}"
+                                data-event-location="{{ event.location }}"
+                                data-event-description="{{ event.description }}">
+                            <i class="fas fa-calendar-plus me-1"></i> Add to Calendar
+                        </button>
+                        
+                        <button class="btn btn-outline-secondary me-2 mb-2">
+                            <i class="fas fa-share-alt me-1"></i> Share Event
+                        </button>
+                        
+                        {% if event.user_id == current_user.id %}
+                        <a href="#" class="btn btn-outline-warning mb-2">
+                            <i class="fas fa-edit me-1"></i> Edit Event
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0">Event Organizer</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                {% if organizer.photo_url %}
+                                <img src="{{ organizer.photo_url }}" alt="{{ organizer.display_name }}" class="rounded-circle me-3" width="50" height="50">
+                                {% else %}
+                                <i class="fas fa-user-circle fa-3x me-3 text-muted"></i>
+                                {% endif %}
+                                <div>
+                                    <h6 class="mb-0">{{ organizer.display_name }}</h6>
+                                    {% if organizer.business_name %}
+                                    <p class="mb-0 small">{{ organizer.business_name }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <a href="#" class="btn btn-sm btn-outline-primary w-100">
+                                <i class="fas fa-envelope me-1"></i> Contact Organizer
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="card border-0 shadow-sm mt-3">
+                        <div class="card-body text-center">
+                            <div class="display-4 mb-2">
+                                <i class="fas {% if event.is_virtual %}fa-laptop{% else %}fa-map-marked-alt{% endif %}"></i>
+                            </div>
+                            {% if event.is_virtual %}
+                            <h5>How to Join</h5>
+                            <p class="small mb-0">This is a virtual event. Use the meeting link provided to join at the scheduled time.</p>
+                            {% else %}
+                            <h5>Event Location</h5>
+                            <p class="small mb-0">{{ event.location }}</p>
+                            <div class="mt-2">
+                                <a href="https://maps.google.com/?q={{ event.location|urlencode }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-directions me-1"></i> Get Directions
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Similar Events -->
+    <h3 class="mb-4">Similar Events You Might Like</h3>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="event-date me-3">
+                            <div class="event-day">15</div>
+                            <div class="event-month">May</div>
+                        </div>
+                        <h5 class="card-title mb-0">Digital Marketing Workshop</h5>
+                    </div>
+                    <p class="small text-muted mb-0">
+                        <i class="fas fa-video me-1"></i> Virtual Event
+                        <span class="ms-2"><i class="fas fa-clock me-1"></i> 2:00 PM</span>
+                    </p>
+                    <p class="card-text mt-2">Learn effective digital marketing strategies for small businesses.</p>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="event-date me-3">
+                            <div class="event-day">22</div>
+                            <div class="event-month">May</div>
+                        </div>
+                        <h5 class="card-title mb-0">Networking Mixer</h5>
+                    </div>
+                    <p class="small text-muted mb-0">
+                        <i class="fas fa-video me-1"></i> Virtual Event
+                        <span class="ms-2"><i class="fas fa-clock me-1"></i> 6:30 PM</span>
+                    </p>
+                    <p class="card-text mt-2">Connect with fellow women entrepreneurs in a casual networking session.</p>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="event-date me-3">
+                            <div class="event-day">29</div>
+                            <div class="event-month">May</div>
+                        </div>
+                        <h5 class="card-title mb-0">Funding Workshop</h5>
+                    </div>
+                    <p class="small text-muted mb-0">
+                        <i class="fas fa-video me-1"></i> Virtual Event
+                        <span class="ms-2"><i class="fas fa-clock me-1"></i> 1:00 PM</span>
+                    </p>
+                    <p class="card-text mt-2">Learn about funding options available for women-owned businesses.</p>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/community.js"></script>
+{% endblock %}

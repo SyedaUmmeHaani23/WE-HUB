@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+
+{% block title %}Nearby Women-Owned Businesses - WE Hub{% endblock %}
+
+{% block head_extra %}
+<!-- Google Maps API -->
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Nearby Women-Owned Businesses</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <p class="lead">Discover and connect with women entrepreneurs in your area.</p>
+        </div>
+        <div class="col-md-4">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search by location..." id="location-search">
+                <button class="btn btn-outline-primary" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Map View -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-0">
+                    <div id="business-map" style="height: 500px;" data-businesses="{{ businesses|tojson }}"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Business Filter -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Filter Businesses</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="category-filter" class="form-label">Business Category</label>
+                        <select class="form-select" id="category-filter">
+                            <option value="">All Categories</option>
+                            <option value="Arts & Crafts">Arts & Crafts</option>
+                            <option value="Beauty & Personal Care">Beauty & Personal Care</option>
+                            <option value="Clothing & Fashion">Clothing & Fashion</option>
+                            <option value="Education & Training">Education & Training</option>
+                            <option value="Food & Beverage">Food & Beverage</option>
+                            <option value="Health & Wellness">Health & Wellness</option>
+                            <option value="Home Decor & Furniture">Home Decor & Furniture</option>
+                            <option value="Professional Services">Professional Services</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="distance-filter" class="form-label">Distance</label>
+                        <select class="form-select" id="distance-filter">
+                            <option value="5">Within 5 miles</option>
+                            <option value="10" selected>Within 10 miles</option>
+                            <option value="25">Within 25 miles</option>
+                            <option value="50">Within 50 miles</option>
+                        </select>
+                    </div>
+                    <div class="d-grid">
+                        <button class="btn btn-primary" id="apply-filters">
+                            <i class="fas fa-filter me-1"></i> Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Business List -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Business Directory</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% if businesses %}
+                            {% for business in businesses %}
+                            <div class="list-group-item business-item" data-category="{{ business.category }}">
+                                <div class="d-flex">
+                                    {% if business.photo %}
+                                    <img src="{{ business.photo }}" alt="{{ business.name }}" class="rounded-circle me-3" width="50" height="50">
+                                    {% else %}
+                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-store"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <h6 class="mb-1">{{ business.name }}</h6>
+                                        <p class="mb-1 small">
+                                            <i class="fas fa-tag me-1"></i> {{ business.category or 'Various Categories' }}
+                                        </p>
+                                        {% if business.location %}
+                                        <p class="mb-0 small text-muted">
+                                            <i class="fas fa-map-marker-alt me-1"></i> {{ business.location }}
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-primary me-1 view-on-map" data-business-id="{{ business.id }}">
+                                        <i class="fas fa-map-pin me-1"></i> View on Map
+                                    </button>
+                                    <a href="#" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-user me-1"></i> View Profile
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="list-group-item text-center py-4">
+                                <i class="fas fa-store fa-3x mb-3 text-muted"></i>
+                                <h5>No Businesses Found</h5>
+                                <p class="text-muted mb-0">Try adjusting your search criteria or check back later as more entrepreneurs join the platform.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Collaboration Ideas -->
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-transparent">
+            <h5 class="mb-0">Collaboration Opportunities</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="d-flex">
+                        <div class="me-3 text-primary">
+                            <i class="fas fa-handshake fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5>Cross-Promotion</h5>
+                            <p class="small mb-0">Partner with complementary businesses to cross-promote products and services to each other's customers.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="d-flex">
+                        <div class="me-3 text-primary">
+                            <i class="fas fa-store-alt fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5>Pop-Up Events</h5>
+                            <p class="small mb-0">Organize joint pop-up shops or events to showcase products and expand your customer base.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex">
+                        <div class="me-3 text-primary">
+                            <i class="fas fa-comments fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5>Knowledge Sharing</h5>
+                            <p class="small mb-0">Connect with other business owners to share expertise, resources, and best practices.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <a href="/community/forum" class="btn btn-outline-primary">
+                    <i class="fas fa-users me-1"></i> Connect in the Community Forum
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/dashboard.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Category filter functionality
+        const categoryFilter = document.getElementById('category-filter');
+        const businessItems = document.querySelectorAll('.business-item');
+        const applyFiltersBtn = document.getElementById('apply-filters');
+        
+        if (applyFiltersBtn) {
+            applyFiltersBtn.addEventListener('click', function() {
+                const category = categoryFilter.value;
+                
+                businessItems.forEach(item => {
+                    const itemCategory = item.dataset.category;
+                    
+                    if (category === '' || itemCategory === category) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Here we would also update the map markers based on filters
+                // This would be implemented with the Google Maps JavaScript API
+            });
+        }
+        
+        // View on map button functionality
+        const viewOnMapButtons = document.querySelectorAll('.view-on-map');
+        viewOnMapButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const businessId = this.dataset.businessId;
+                
+                // In a real implementation, this would center the map on the selected business
+                // and open its info window
+                
+                // Scroll to map for mobile users
+                const mapElement = document.getElementById('business-map');
+                mapElement.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    });
+</script>
+{% endblock %}

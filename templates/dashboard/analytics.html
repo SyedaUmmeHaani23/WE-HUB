@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+
+{% block title %}Business Analytics - WE Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Business Analytics</h1>
+    
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stats-icon me-3">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">Profile Views</h5>
+                            <small class="text-muted">Last 30 days</small>
+                        </div>
+                    </div>
+                    <h3 class="mb-0">{{ views.month }}</h3>
+                    <div class="small text-success mt-2">
+                        <i class="fas fa-arrow-up"></i> 12% from last month
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stats-icon me-3">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">Products</h5>
+                            <small class="text-muted">Total active products</small>
+                        </div>
+                    </div>
+                    <h3 class="mb-0">{{ analytics.total_products }}</h3>
+                    {% if analytics.newest_products %}
+                    <div class="small text-success mt-2">
+                        <i class="fas fa-plus"></i> {{ analytics.newest_products|length }} new this month
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stats-icon me-3">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">Sales</h5>
+                            <small class="text-muted">Last 30 days</small>
+                        </div>
+                    </div>
+                    <h3 class="mb-0">$1,250</h3>
+                    <div class="small text-success mt-2">
+                        <i class="fas fa-arrow-up"></i> 8% from last month
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stats-icon me-3">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">Engagement</h5>
+                            <small class="text-muted">Interactions last 30 days</small>
+                        </div>
+                    </div>
+                    <h3 class="mb-0">75</h3>
+                    <div class="small text-success mt-2">
+                        <i class="fas fa-arrow-up"></i> 15% from last month
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Profile Views</h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-primary active">7 Days</button>
+                        <button type="button" class="btn btn-outline-primary">30 Days</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="sales-chart" 
+                                data-dates="{{ chart_dates|join(',') }}" 
+                                data-views="{{ chart_views|join(',') }}"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Activity Over Time</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="thirty-day-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Products by Category</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="category-chart" data-categories="{{ analytics.product_categories|tojson }}"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Newest Products</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% if analytics.newest_products %}
+                            {% for product in analytics.newest_products %}
+                            <li class="list-group-item d-flex align-items-center">
+                                {% if product.image %}
+                                <img src="{{ product.image }}" alt="{{ product.name }}" class="rounded me-3" width="40" height="40" style="object-fit: cover;">
+                                {% else %}
+                                <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-box text-muted"></i>
+                                </div>
+                                {% endif %}
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0">{{ product.name }}</h6>
+                                    <small class="text-muted">${{ product.price }}</small>
+                                </div>
+                                <a href="/shop/product/{{ product.id }}" class="btn btn-sm btn-outline-primary">View</a>
+                            </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item text-center py-4">
+                                <p class="mb-2 text-muted">No products added yet</p>
+                                <a href="/shop/add-product" class="btn btn-sm btn-primary">Add Product</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Marketing Tips -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-transparent">
+            <h5 class="mb-0">Marketing Tips & Insights</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Optimize Your Product Listings</h5>
+                            <p class="card-text">Adding high-quality images and detailed descriptions can increase product views by up to 30%.</p>
+                            <a href="#" class="btn btn-sm btn-outline-primary">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Engage With the Community</h5>
+                            <p class="card-text">Businesses that engage in forum discussions see 2x more profile views on average.</p>
+                            <a href="/community/forum" class="btn btn-sm btn-outline-primary">Join Discussions</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Google My Business Integration</h5>
+                            <p class="card-text">Connect your profile with Google My Business to increase local visibility.</p>
+                            <a href="#" class="btn btn-sm btn-outline-primary">Set Up Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/dashboard.js"></script>
+{% endblock %}

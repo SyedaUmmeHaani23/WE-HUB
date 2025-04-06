@@ -1,0 +1,407 @@
+{% extends 'base.html' %}
+
+{% block title %}Community Events - WE Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-3">Community Events</h1>
+            <p class="lead">Connect with other women entrepreneurs through virtual and in-person events.</p>
+        </div>
+        <div class="col-md-4 d-flex align-items-center justify-content-md-end">
+            {% if current_user.is_authenticated %}
+            <a href="/community/events/create" class="btn btn-primary">
+                <i class="fas fa-calendar-plus me-1"></i> Create New Event
+            </a>
+            {% else %}
+            <a href="/auth/login" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt me-1"></i> Login to Create Events
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Filter Controls -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" id="event-search" placeholder="Search events...">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="event-type-filter">
+                        <option value="">All Event Types</option>
+                        <option value="true">Virtual Events</option>
+                        <option value="false">In-Person Events</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="date-filter">
+                        <option value="">All Dates</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-primary w-100" id="reset-filters">
+                        <i class="fas fa-redo-alt me-1"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Events List -->
+    <div class="row">
+        <div class="col-lg-8">
+            {% if events %}
+                <div class="event-list">
+                    {% for event in events %}
+                    <div class="card event-card border-0 shadow-sm mb-4 event-item" 
+                         data-virtual="{{ event.is_virtual|lower }}" 
+                         data-date="{{ event.date }}">
+                        <div class="card-body">
+                            <div class="row g-0">
+                                <div class="col-md-3 col-sm-4 mb-3 mb-sm-0">
+                                    <div class="event-date text-center">
+                                        {% if event.date %}
+                                            {% set date_obj = event.date.split('-') %}
+                                            <div class="event-day">{{ date_obj[2] }}</div>
+                                            <div class="event-month">
+                                                {% set months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] %}
+                                                {{ months[date_obj[1]|int - 1] }}
+                                            </div>
+                                        {% else %}
+                                            <div class="event-day">TBA</div>
+                                            <div class="event-month">Date</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        {% if event.is_virtual %}
+                                        <span class="badge bg-info">Virtual</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">In-Person</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-9 col-sm-8">
+                                    <h5 class="card-title">
+                                        <a href="/community/events/{{ event.id }}" class="text-decoration-none text-reset">{{ event.title }}</a>
+                                    </h5>
+                                    
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i> {{ event.time or 'Time TBA' }}
+                                            {% if not event.is_virtual %}
+                                            <span class="ms-3"><i class="fas fa-map-marker-alt me-1"></i> {{ event.location or 'Location TBA' }}</span>
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    
+                                    <p class="card-text">{{ event.description[:150] }}{% if event.description|length > 150 %}...{% endif %}</p>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <div class="d-flex align-items-center">
+                                            {% if event.organizer.photo_url %}
+                                            <img src="{{ event.organizer.photo_url }}" class="rounded-circle me-2" width="24" height="24" alt="Organizer avatar">
+                                            {% else %}
+                                            <i class="fas fa-user-circle me-2 text-muted"></i>
+                                            {% endif %}
+                                            <small class="text-muted">Organized by {{ event.organizer.display_name or event.organizer.business_name or 'WE Hub Member' }}</small>
+                                        </div>
+                                        <a href="/community/events/{{ event.id }}" class="btn btn-sm btn-outline-primary">Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- No Results Message (hidden by default) -->
+                <div id="no-events-found" class="card border-0 shadow-sm d-none">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-search fa-3x mb-3 text-muted"></i>
+                        <h3>No Events Found</h3>
+                        <p class="text-muted mb-0">Try adjusting your filters or search criteria.</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-calendar-alt fa-4x mb-3 text-muted"></i>
+                        <h3>No Events Yet</h3>
+                        <p class="text-muted mb-4">Be the first to create an event for our community!</p>
+                        {% if current_user.is_authenticated %}
+                        <a href="/community/events/create" class="btn btn-primary">
+                            <i class="fas fa-calendar-plus me-1"></i> Create New Event
+                        </a>
+                        {% else %}
+                        <a href="/auth/login" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-1"></i> Login to Create Events
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Calendar Widget -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Event Calendar</h5>
+                </div>
+                <div class="card-body">
+                    <div class="calendar-widget">
+                        <!-- Simple calendar display -->
+                        <table class="table table-bordered text-center">
+                            <thead>
+                                <tr>
+                                    <th colspan="7">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <button class="btn btn-sm btn-link text-decoration-none">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </button>
+                                            <span>May 2023</span>
+                                            <button class="btn btn-sm btn-link text-decoration-none">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </button>
+                                        </div>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>Su</th>
+                                    <th>Mo</th>
+                                    <th>Tu</th>
+                                    <th>We</th>
+                                    <th>Th</th>
+                                    <th>Fr</th>
+                                    <th>Sa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-muted">30</td>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                    <td>5</td>
+                                    <td>6</td>
+                                </tr>
+                                <tr>
+                                    <td>7</td>
+                                    <td>8</td>
+                                    <td>9</td>
+                                    <td>10</td>
+                                    <td>11</td>
+                                    <td>12</td>
+                                    <td>13</td>
+                                </tr>
+                                <tr>
+                                    <td>14</td>
+                                    <td class="bg-primary text-white">15</td>
+                                    <td>16</td>
+                                    <td>17</td>
+                                    <td>18</td>
+                                    <td>19</td>
+                                    <td>20</td>
+                                </tr>
+                                <tr>
+                                    <td>21</td>
+                                    <td class="bg-primary text-white">22</td>
+                                    <td>23</td>
+                                    <td>24</td>
+                                    <td>25</td>
+                                    <td>26</td>
+                                    <td>27</td>
+                                </tr>
+                                <tr>
+                                    <td>28</td>
+                                    <td>29</td>
+                                    <td>30</td>
+                                    <td>31</td>
+                                    <td class="text-muted">1</td>
+                                    <td class="text-muted">2</td>
+                                    <td class="text-muted">3</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-center">
+                            <a href="https://calendar.google.com/calendar/" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <i class="fab fa-google me-1"></i> Add to Google Calendar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Event Types -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Event Types</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="badge bg-info me-2">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <span>Virtual Events</span>
+                        </div>
+                        <a href="#" class="btn btn-sm btn-outline-primary" data-filter-type="true">View All</a>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="badge bg-secondary me-2">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <span>In-Person Events</span>
+                        </div>
+                        <a href="#" class="btn btn-sm btn-outline-primary" data-filter-type="false">View All</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Event Benefits -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Why Attend Events?</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3">
+                            <div class="d-flex">
+                                <div class="me-3 text-primary">
+                                    <i class="fas fa-network-wired fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Networking Opportunities</h6>
+                                    <p class="small text-muted mb-0">Connect with like-minded entrepreneurs and potential collaborators.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mb-3">
+                            <div class="d-flex">
+                                <div class="me-3 text-primary">
+                                    <i class="fas fa-book-reader fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Skill Development</h6>
+                                    <p class="small text-muted mb-0">Learn new skills and strategies from industry experts and peers.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex">
+                                <div class="me-3 text-primary">
+                                    <i class="fas fa-lightbulb fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Inspiration & Motivation</h6>
+                                    <p class="small text-muted mb-0">Find inspiration and stay motivated by connecting with the community.</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/community.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const eventSearch = document.getElementById('event-search');
+        const eventTypeFilter = document.getElementById('event-type-filter');
+        const dateFilter = document.getElementById('date-filter');
+        const resetFiltersBtn = document.getElementById('reset-filters');
+        const eventItems = document.querySelectorAll('.event-item');
+        const noEventsFound = document.getElementById('no-events-found');
+        const typeFilterLinks = document.querySelectorAll('[data-filter-type]');
+        
+        // Event type filter links
+        typeFilterLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const filterValue = this.dataset.filterType;
+                eventTypeFilter.value = filterValue;
+                filterEvents();
+            });
+        });
+        
+        // Search and filter functionality
+        eventSearch.addEventListener('input', filterEvents);
+        eventTypeFilter.addEventListener('change', filterEvents);
+        dateFilter.addEventListener('change', filterEvents);
+        
+        // Reset filters
+        resetFiltersBtn.addEventListener('click', function() {
+            eventSearch.value = '';
+            eventTypeFilter.value = '';
+            dateFilter.value = '';
+            filterEvents();
+        });
+        
+        function filterEvents() {
+            const searchTerm = eventSearch.value.toLowerCase();
+            const eventType = eventTypeFilter.value;
+            const dateValue = dateFilter.value;
+            
+            let visibleCount = 0;
+            
+            eventItems.forEach(item => {
+                const title = item.querySelector('.card-title').textContent.toLowerCase();
+                const description = item.querySelector('.card-text').textContent.toLowerCase();
+                const itemVirtual = item.dataset.virtual;
+                const itemDate = item.dataset.date;
+                
+                const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+                const matchesType = eventType === '' || itemVirtual === eventType;
+                
+                // Date filtering logic (simplified for demo)
+                let matchesDate = true;
+                if (dateValue !== '') {
+                    const today = new Date();
+                    const eventDate = new Date(itemDate);
+                    
+                    if (dateValue === 'today') {
+                        matchesDate = today.toDateString() === eventDate.toDateString();
+                    } else if (dateValue === 'week') {
+                        const weekStart = new Date(today);
+                        weekStart.setDate(today.getDate() - today.getDay());
+                        const weekEnd = new Date(weekStart);
+                        weekEnd.setDate(weekStart.getDate() + 6);
+                        
+                        matchesDate = eventDate >= weekStart && eventDate <= weekEnd;
+                    } else if (dateValue === 'month') {
+                        matchesDate = today.getMonth() === eventDate.getMonth() && 
+                                      today.getFullYear() === eventDate.getFullYear();
+                    }
+                }
+                
+                if (matchesSearch && matchesType && matchesDate) {
+                    item.style.display = '';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Show/hide no results message
+            if (visibleCount === 0 && eventItems.length > 0) {
+                noEventsFound.classList.remove('d-none');
+            } else {
+                noEventsFound.classList.add('d-none');
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+
+{% block title %}Shop - WE Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-3">Shop Women-Owned Businesses</h1>
+            <p class="lead">Discover unique products from our community of women entrepreneurs.</p>
+        </div>
+        <div class="col-md-4 d-flex align-items-center justify-content-md-end">
+            {% if current_user.is_authenticated %}
+            <a href="/shop/my-products" class="btn btn-outline-primary me-2">
+                <i class="fas fa-boxes me-1"></i> My Products
+            </a>
+            <a href="/shop/add-product" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i> Add Product
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search products..." id="product-search">
+                <button class="btn btn-outline-secondary" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <select class="form-select" id="category-filter">
+                <option value="">All Categories</option>
+                <option value="Arts & Crafts">Arts & Crafts</option>
+                <option value="Beauty & Personal Care">Beauty & Personal Care</option>
+                <option value="Clothing & Fashion">Clothing & Fashion</option>
+                <option value="Education & Training">Education & Training</option>
+                <option value="Food & Beverage">Food & Beverage</option>
+                <option value="Health & Wellness">Health & Wellness</option>
+                <option value="Home Decor & Furniture">Home Decor & Furniture</option>
+                <option value="Professional Services">Professional Services</option>
+                <option value="Technology">Technology</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div class="col-md-3 mb-3">
+            <select class="form-select" id="sort-options">
+                <option value="newest">Newest First</option>
+                <option value="price-low-high">Price: Low to High</option>
+                <option value="price-high-low">Price: High to Low</option>
+                <option value="name-a-z">Name: A to Z</option>
+            </select>
+        </div>
+        <div class="col-md-3 mb-3 text-md-end">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary active" id="grid-view">
+                    <i class="fas fa-th"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" id="list-view">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    {% if products %}
+    <div class="row g-4" id="products-grid">
+        {% for product in products %}
+        <div class="col-lg-3 col-md-4 col-sm-6 product-item" data-category="{{ product.category }}">
+            <div class="card h-100 product-card">
+                {% if product.images|length > 0 %}
+                <img src="{{ product.images[0] }}" class="card-img-top" alt="{{ product.name }}">
+                {% else %}
+                <div class="card-img-top d-flex align-items-center justify-content-center bg-light">
+                    <i class="fas fa-image fa-3x text-muted"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="product-price">${{ product.price }}</p>
+                    <p class="card-text text-truncate">{{ product.description }}</p>
+                    {% if product.seller %}
+                    <div class="d-flex align-items-center mb-3">
+                        {% if product.seller.photo %}
+                        <img src="{{ product.seller.photo }}" alt="Seller" class="rounded-circle me-2" width="30" height="30">
+                        {% else %}
+                        <i class="fas fa-user-circle fa-2x me-2 text-muted"></i>
+                        {% endif %}
+                        <small class="text-muted">{{ product.seller.name }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <div class="d-grid gap-2">
+                        <a href="/shop/product/{{ product.id }}" class="btn btn-outline-primary">View Details</a>
+                        <button class="btn btn-primary add-to-cart" 
+                                data-product-id="{{ product.id }}" 
+                                data-product-name="{{ product.name }}" 
+                                data-product-price="{{ product.price }}"
+                                data-product-image="{{ product.images[0] if product.images|length > 0 else '' }}">
+                            <i class="fas fa-cart-plus me-1"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="row d-none" id="products-list">
+        {% for product in products %}
+        <div class="col-12 mb-3 product-item" data-category="{{ product.category }}">
+            <div class="card">
+                <div class="row g-0">
+                    <div class="col-md-3">
+                        {% if product.images|length > 0 %}
+                        <img src="{{ product.images[0] }}" class="img-fluid rounded-start h-100 object-fit-cover" alt="{{ product.name }}">
+                        {% else %}
+                        <div class="d-flex align-items-center justify-content-center bg-light h-100 rounded-start">
+                            <i class="fas fa-image fa-3x text-muted"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="product-price">${{ product.price }}</p>
+                            </div>
+                            <p class="card-text">{{ product.description }}</p>
+                            {% if product.seller %}
+                            <div class="d-flex align-items-center mb-3">
+                                {% if product.seller.photo %}
+                                <img src="{{ product.seller.photo }}" alt="Seller" class="rounded-circle me-2" width="30" height="30">
+                                {% else %}
+                                <i class="fas fa-user-circle fa-2x me-2 text-muted"></i>
+                                {% endif %}
+                                <small class="text-muted">{{ product.seller.name }}</small>
+                            </div>
+                            {% endif %}
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="/shop/product/{{ product.id }}" class="btn btn-outline-primary">View Details</a>
+                                <button class="btn btn-primary add-to-cart" 
+                                        data-product-id="{{ product.id }}" 
+                                        data-product-name="{{ product.name }}" 
+                                        data-product-price="{{ product.price }}"
+                                        data-product-image="{{ product.images[0] if product.images|length > 0 else '' }}">
+                                    <i class="fas fa-cart-plus me-1"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-shopping-bag fa-4x mb-3 text-muted"></i>
+        <h3>No Products Available</h3>
+        <p>Be the first to add products to the marketplace!</p>
+        {% if current_user.is_authenticated %}
+        <a href="/shop/add-product" class="btn btn-primary mt-3">Add a Product</a>
+        {% else %}
+        <a href="/auth/login" class="btn btn-primary mt-3">Login to Add Products</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Grid/List view toggle
+        const gridView = document.getElementById('grid-view');
+        const listView = document.getElementById('list-view');
+        const productsGrid = document.getElementById('products-grid');
+        const productsList = document.getElementById('products-list');
+        
+        gridView.addEventListener('click', function() {
+            gridView.classList.add('active');
+            listView.classList.remove('active');
+            productsGrid.classList.remove('d-none');
+            productsList.classList.add('d-none');
+        });
+        
+        listView.addEventListener('click', function() {
+            listView.classList.add('active');
+            gridView.classList.remove('active');
+            productsList.classList.remove('d-none');
+            productsGrid.classList.add('d-none');
+        });
+        
+        // Product search
+        const productSearch = document.getElementById('product-search');
+        productSearch.addEventListener('input', filterProducts);
+        
+        // Category filter
+        const categoryFilter = document.getElementById('category-filter');
+        categoryFilter.addEventListener('change', filterProducts);
+        
+        // Sort options
+        const sortOptions = document.getElementById('sort-options');
+        sortOptions.addEventListener('change', sortProducts);
+        
+        function filterProducts() {
+            const searchTerm = productSearch.value.toLowerCase();
+            const category = categoryFilter.value;
+            const productItems = document.querySelectorAll('.product-item');
+            
+            productItems.forEach(item => {
+                const name = item.querySelector('.card-title').textContent.toLowerCase();
+                const description = item.querySelector('.card-text').textContent.toLowerCase();
+                const itemCategory = item.dataset.category;
+                
+                const matchesSearch = name.includes(searchTerm) || description.includes(searchTerm);
+                const matchesCategory = category === '' || itemCategory === category;
+                
+                if (matchesSearch && matchesCategory) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        function sortProducts() {
+            const sortValue = sortOptions.value;
+            const gridItems = Array.from(document.querySelectorAll('#products-grid .product-item'));
+            const listItems = Array.from(document.querySelectorAll('#products-list .product-item'));
+            
+            function getSortValue(item, sortBy) {
+                switch(sortBy) {
+                    case 'price-low-high':
+                    case 'price-high-low':
+                        return parseFloat(item.querySelector('.product-price').textContent.replace('$', ''));
+                    case 'name-a-z':
+                        return item.querySelector('.card-title').textContent;
+                    case 'newest':
+                    default:
+                        return 0; // No sorting for newest
+                }
+            }
+            
+            function sortAndAppend(items, container, sortBy) {
+                items.sort((a, b) => {
+                    const aValue = getSortValue(a, sortBy);
+                    const bValue = getSortValue(b, sortBy);
+                    
+                    if (sortBy === 'price-high-low') {
+                        return bValue - aValue;
+                    } else if (sortBy === 'price-low-high') {
+                        return aValue - bValue;
+                    } else if (sortBy === 'name-a-z') {
+                        return aValue.localeCompare(bValue);
+                    }
+                    return 0;
+                });
+                
+                container.innerHTML = '';
+                items.forEach(item => container.appendChild(item));
+            }
+            
+            sortAndAppend(gridItems, document.getElementById('products-grid'), sortValue);
+            sortAndAppend(listItems, document.getElementById('products-list'), sortValue);
+        }
+    });
+</script>
+{% endblock %}

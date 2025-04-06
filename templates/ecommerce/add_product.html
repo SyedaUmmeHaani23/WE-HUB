@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New Product - WE Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h1 class="h3 mb-0">Add New Product</h1>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/shop/add-product">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Product Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required></textarea>
+                            <div class="form-text">Provide a detailed description of your product, including features, materials, dimensions, etc.</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="price" class="form-label">Price ($) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="price" name="price" min="0.01" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category">
+                                    <option value="">Select a category</option>
+                                    <option value="Arts & Crafts">Arts & Crafts</option>
+                                    <option value="Beauty & Personal Care">Beauty & Personal Care</option>
+                                    <option value="Clothing & Fashion">Clothing & Fashion</option>
+                                    <option value="Education & Training">Education & Training</option>
+                                    <option value="Food & Beverage">Food & Beverage</option>
+                                    <option value="Health & Wellness">Health & Wellness</option>
+                                    <option value="Home Decor & Furniture">Home Decor & Furniture</option>
+                                    <option value="Professional Services">Professional Services</option>
+                                    <option value="Technology">Technology</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h5>Product Images</h5>
+                                    <p class="mb-0">After creating your product, you'll be able to upload product images on the edit page.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="/shop/my-products" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Create Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-transparent">
+                    <h3 class="h5 mb-0">Product Listing Tips</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-image text-primary me-2"></i> Images</h5>
+                            <ul class="small">
+                                <li>Use high-quality, well-lit photos</li>
+                                <li>Show your product from multiple angles</li>
+                                <li>Include lifestyle images to show your product in use</li>
+                                <li>Use a consistent background for a professional look</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-file-alt text-primary me-2"></i> Description</h5>
+                            <ul class="small">
+                                <li>Be detailed and specific about features and benefits</li>
+                                <li>Include dimensions, materials, and care instructions</li>
+                                <li>Highlight what makes your product unique</li>
+                                <li>Use bullet points for easy scanning</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - WE Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <h1 class="text-center mb-4">Welcome Back</h1>
+                    <p class="text-center text-muted mb-4">Sign in to your WE Hub account</p>
+                    
+                    <div id="login-error" class="alert alert-danger d-none" role="alert"></div>
+                    
+                    <!-- Google Sign-In Button -->
+                    <div class="d-grid mb-4">
+                        <button onclick="signInWithGoogle()" class="btn btn-outline-primary">
+                            <i class="fab fa-google me-2"></i> Sign in with Google
+                        </button>
+                    </div>
+                    
+                    <div class="text-center my-3 position-relative">
+                        <hr class="position-absolute w-100" style="top: 50%;">
+                        <span class="position-relative px-3 bg-body">or</span>
+                    </div>
+                    
+                    <!-- Email/Password Form -->
+                    <form id="login-form" onsubmit="handleLogin(event)">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email address</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" class="form-control" id="password" placeholder="••••••••" required>
+                            </div>
+                            <div class="text-end mt-2">
+                                <a href="#" class="text-decoration-none small" id="forgot-password">Forgot password?</a>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary py-2">Log In</button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <p class="mb-0">Don't have an account? <a href="/auth/register" class="text-decoration-none">Sign up</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/auth.js"></script>
+<script>
+    document.getElementById('forgot-password').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        if (!email) {
+            alert('Please enter your email address first.');
+            return;
+        }
+        
+        const auth = window.firebase.auth;
+        auth.sendPasswordResetEmail(email)
+            .then(() => {
+                alert('Password reset email sent. Please check your inbox.');
+            })
+            .catch((error) => {
+                console.error("Password reset error:", error);
+                alert(`Error: ${error.message}`);
+            });
+    });
+</script>
+{% endblock %}

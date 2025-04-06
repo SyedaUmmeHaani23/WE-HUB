@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }} - WE Hub Forum{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/community/forum">Forum</a></li>
+            {% if post.category %}
+            <li class="breadcrumb-item"><a href="/community/forum?category={{ post.category }}">{{ post.category }}</a></li>
+            {% endif %}
+            <li class="breadcrumb-item active" aria-current="page">{{ post.title }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Main Post -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h1 class="card-title h3 mb-3">{{ post.title }}</h1>
+                    
+                    <div class="d-flex align-items-center mb-4">
+                        {% if author.photo_url %}
+                        <img src="{{ author.photo_url }}" class="rounded-circle me-3" width="50" height="50" alt="Author avatar">
+                        {% else %}
+                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <h6 class="mb-0">{{ author.display_name }}</h6>
+                            <div class="forum-author">
+                                {% if author.business_name %}
+                                {{ author.business_name }} ·
+                                {% endif %}
+                                {% if post.created_at %}
+                                {{ post.created_at.strftime('%b %d, %Y at %I:%M %p') if post.created_at is not string else 'Recently' }}
+                                {% else %}
+                                Recently
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post-content mb-4">
+                        {{ post.content|nl2br }}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            {% if post.category %}
+                            <span class="forum-category">{{ post.category }}</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary me-2">
+                                <i class="fas fa-share-alt me-1"></i> Share
+                            </button>
+                            {% if post.user_id == current_user.id %}
+                            <a href="#" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-edit me-1"></i> Edit
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Comments Section -->
+            <h3 class="mb-3">Comments ({{ post.comments|length }})</h3>
+            
+            {% if current_user.is_authenticated %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <form id="comment-form" data-post-id="{{ post.id }}">
+                        <div class="mb-3">
+                            <label for="comment-content" class="form-label">Add Your Comment</label>
+                            <textarea class="form-control" id="comment-content" rows="3" required></textarea>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Post Comment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-info mb-4">
+                <i class="fas fa-info-circle me-2"></i>
+                <a href="/auth/login" class="alert-link">Log in</a> or <a href="/auth/register" class="alert-link">register</a> to join the discussion.
+            </div>
+            {% endif %}
+            
+            <!-- Comments List -->
+            <div id="comments-container">
+                {% if post.comments|length > 0 %}
+                    {% for comment in post.comments %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                {% if comment.author.photo_url %}
+                                <img src="{{ comment.author.photo_url }}" class="rounded-circle me-2" width="40" height="40" alt="User avatar">
+                                {% else %}
+                                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <h5 class="card-title mb-0">{{ comment.author.display_name }}</h5>
+                                    <small class="text-muted">
+                                        {% if comment.created_at %}
+                                        {{ comment.created_at.strftime('%b %d, %Y at %I:%M %p') if comment.created_at is not string else comment.created_at }}
+                                        {% else %}
+                                        Recently
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                            <p class="card-text">{{ comment.content }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-comments fa-3x mb-3 text-muted"></i>
+                        <h5>No Comments Yet</h5>
+                        <p class="text-muted">Be the first to share your thoughts on this post!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Author Info -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">About the Author</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        {% if author.photo_url %}
+                        <img src="{{ author.photo_url }}" class="rounded-circle me-3" width="60" height="60" alt="Author avatar">
+                        {% else %}
+                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-user fa-2x"></i>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <h5 class="mb-0">{{ author.display_name }}</h5>
+                            {% if author.business_name %}
+                            <p class="mb-0">{{ author.business_name }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-user me-1"></i> View Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Similar Topics -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Similar Topics</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Marketing strategies for small businesses</h6>
+                                <small class="text-muted">3 days ago</small>
+                            </div>
+                            <small class="text-muted">15 comments</small>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Finding funding opportunities</h6>
+                                <small class="text-muted">1 week ago</small>
+                            </div>
+                            <small class="text-muted">8 comments</small>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Work-life balance as an entrepreneur</h6>
+                                <small class="text-muted">2 weeks ago</small>
+                            </div>
+                            <small class="text-muted">21 comments</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Community Guidelines -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Community Guidelines</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Be respectful and supportive</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Stay on topic and contribute meaningfully</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Share your knowledge and experiences</li>
+                        <li><i class="fas fa-times-circle text-danger me-2"></i> No spam or excessive self-promotion</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/community.js"></script>
+{% endblock %}

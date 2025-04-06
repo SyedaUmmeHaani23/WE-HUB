@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - WE Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <h1 class="text-center mb-3">Create Account</h1>
+                    <p class="text-center text-muted mb-4">Join the community of women entrepreneurs</p>
+                    
+                    <div id="register-error" class="alert alert-danger d-none" role="alert"></div>
+                    
+                    <!-- Google Sign-Up Button -->
+                    <div class="d-grid mb-4">
+                        <button onclick="signInWithGoogle()" class="btn btn-outline-primary">
+                            <i class="fab fa-google me-2"></i> Sign up with Google
+                        </button>
+                    </div>
+                    
+                    <div class="text-center my-3 position-relative">
+                        <hr class="position-absolute w-100" style="top: 50%;">
+                        <span class="position-relative px-3 bg-body">or</span>
+                    </div>
+                    
+                    <!-- Email/Password Registration Form -->
+                    <form id="register-form" onsubmit="handleRegister(event)">
+                        <div class="mb-3">
+                            <label for="display-name" class="form-label">Full Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                <input type="text" class="form-control" id="display-name" placeholder="Your Name" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email address</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" class="form-control" id="password" placeholder="••••••••" required minlength="6">
+                            </div>
+                            <small class="form-text text-muted">Password must be at least 6 characters long</small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="confirm-password" class="form-label">Confirm Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" class="form-control" id="confirm-password" placeholder="••••••••" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4 form-check">
+                            <input type="checkbox" class="form-check-input" id="agree-terms" required>
+                            <label class="form-check-label" for="agree-terms">
+                                I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                            </label>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary py-2">Create Account</button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <p class="mb-0">Already have an account? <a href="/auth/login" class="text-decoration-none">Log in</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/auth.js"></script>
+{% endblock %}

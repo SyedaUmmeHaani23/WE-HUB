@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Forum Post - WE Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h1 class="h3 mb-0">Create New Post</h1>
+                </div>
+                <div class="card-body">
+                    <form id="forum-post-form" method="POST" action="/community/forum/create">
+                        <div class="mb-3">
+                            <label for="post-title" class="form-label">Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="post-title" name="title" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="post-category" class="form-label">Category</label>
+                            <select class="form-select" id="post-category" name="category">
+                                <option value="">Select a category</option>
+                                <option value="Business Tips">Business Tips</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Funding">Funding</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Work-Life Balance">Work-Life Balance</option>
+                                <option value="General Discussion">General Discussion</option>
+                                <option value="Questions">Questions</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="post-content" class="form-label">Content <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="post-content" name="content" rows="8" required></textarea>
+                            <div class="form-text">
+                                Share your knowledge, ask questions, or start a discussion with the community.
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h5>Community Guidelines</h5>
+                                    <ul class="mb-0">
+                                        <li>Be respectful and supportive of other community members</li>
+                                        <li>Keep content relevant to women entrepreneurs and business topics</li>
+                                        <li>Avoid excessive self-promotion or spam</li>
+                                        <li>Don't share sensitive personal or financial information</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="/community/forum" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Create Post</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-transparent">
+                    <h3 class="h5 mb-0">Tips for a Great Post</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <div class="d-flex">
+                                <div class="me-3 text-primary">
+                                    <i class="fas fa-heading"></i>
+                                </div>
+                                <div>
+                                    <h6>Clear Title</h6>
+                                    <p class="small mb-0">Create a specific, descriptive title that clearly states the topic or question.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <div class="d-flex">
+                                <div class="me-3 text-primary">
+                                    <i class="fas fa-paragraph"></i>
+                                </div>
+                                <div>
+                                    <h6>Detailed Content</h6>
+                                    <p class="small mb-0">Provide context and details to help others understand your post and respond effectively.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <div class="d-flex">
+                                <div class="me-3 text-primary">
+                                    <i class="fas fa-tags"></i>
+                                </div>
+                                <div>
+                                    <h6>Appropriate Category</h6>
+                                    <p class="small mb-0">Select the relevant category to help others find your post and reach the right audience.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex">
+                                <div class="me-3 text-primary">
+                                    <i class="fas fa-question-circle"></i>
+                                </div>
+                                <div>
+                                    <h6>Specific Questions</h6>
+                                    <p class="small mb-0">If asking for help, be specific about what you need to get the most useful responses.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/community.js"></script>
+{% endblock %}

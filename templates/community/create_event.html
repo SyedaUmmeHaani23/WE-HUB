@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Event - WE Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h1 class="h3 mb-0">Create New Event</h1>
+                </div>
+                <div class="card-body">
+                    <form id="event-form" method="POST" action="/community/events/create">
+                        <div class="mb-3">
+                            <label for="event-title" class="form-label">Event Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="event-title" name="title" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="event-description" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="event-description" name="description" rows="5" required></textarea>
+                            <div class="form-text">Provide details about the event, including what attendees can expect, who should attend, and what they'll learn or gain.</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="event-date" class="form-label">Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="event-date" name="date" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="event-time" class="form-label">Time <span class="text-danger">*</span></label>
+                                <input type="time" class="form-control" id="event-time" name="time" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="is-virtual" name="is_virtual">
+                            <label class="form-check-label" for="is-virtual">This is a virtual event</label>
+                        </div>
+                        
+                        <div class="mb-3" id="meeting-link-group">
+                            <label for="meeting-link" class="form-label">Meeting Link</label>
+                            <input type="url" class="form-control" id="meeting-link" name="meeting_link" placeholder="https://meet.google.com/...">
+                            <div class="form-text">Provide a Google Meet, Zoom, or other video conferencing link for virtual events.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="event-location" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="event-location" name="location" placeholder="Address or venue name">
+                            <div class="form-text">For in-person events, provide the address or venue. For virtual events, you can leave this blank.</div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h5>Event Guidelines</h5>
+                                    <ul class="mb-0">
+                                        <li>Events must be relevant to women entrepreneurs and business owners</li>
+                                        <li>Provide clear information about date, time, and how to join</li>
+                                        <li>Be specific about what attendees can expect and what they'll gain</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="/community/events" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Create Event</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/community.js"></script>
+{% endblock %}

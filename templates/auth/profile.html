@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - WE Hub{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-2 col-md-3 text-center mb-3 mb-md-0">
+                {% if user.photo_url %}
+                <img src="{{ user.photo_url }}" alt="Profile Picture" class="profile-avatar">
+                {% else %}
+                <div class="profile-avatar d-flex align-items-center justify-content-center bg-secondary">
+                    <i class="fas fa-user-circle fa-4x text-white"></i>
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-lg-10 col-md-9">
+                <h1 class="mb-2">{{ user.display_name }}</h1>
+                <p class="lead mb-0">{{ user.email }}</p>
+                {% if user.business_data and user.business_data.name %}
+                <p class="fs-5 mb-0"><i class="fas fa-briefcase me-1"></i> {{ user.business_data.name }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="list-group">
+                <a href="#profile-info" class="list-group-item list-group-item-action active" data-bs-toggle="list">
+                    <i class="fas fa-user-circle me-2"></i> Profile Information
+                </a>
+                <a href="#business-details" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="fas fa-briefcase me-2"></i> Business Details
+                </a>
+                <a href="#security" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="fas fa-shield-alt me-2"></i> Security
+                </a>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="tab-content">
+                <!-- Profile Information Tab -->
+                <div class="tab-pane fade show active" id="profile-info">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-transparent border-0">
+                            <h3 class="card-title mb-0">Profile Information</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label">Name</label>
+                                <div class="col-sm-9">
+                                    <p class="form-control-plaintext">{{ user.display_name }}</p>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label">Email</label>
+                                <div class="col-sm-9">
+                                    <p class="form-control-plaintext">{{ user.email }}</p>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label">Account Created</label>
+                                <div class="col-sm-9">
+                                    <p class="form-control-plaintext">
+                                        <!-- Add account creation date if available -->
+                                        <i class="text-muted">Information not available</i>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <small>To update your name or profile picture, you can do so through your Google account settings.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Business Details Tab -->
+                <div class="tab-pane fade" id="business-details">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-transparent border-0">
+                            <h3 class="card-title mb-0">Business Details</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="profile-form" method="post" action="/auth/profile">
+                                <div class="mb-3">
+                                    <label for="business_name" class="form-label">Business Name</label>
+                                    <input type="text" class="form-control" id="business_name" name="business_name" value="{{ user.business_data.name or '' }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="business_description" class="form-label">Business Description</label>
+                                    <textarea class="form-control" id="business_description" name="business_description" rows="3">{{ user.business_data.description or '' }}</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="business_category" class="form-label">Business Category</label>
+                                    <select class="form-select" id="business_category" name="business_category">
+                                        <option value="" {% if not user.business_data.category %}selected{% endif %}>Select a category</option>
+                                        <option value="Arts & Crafts" {% if user.business_data.category == 'Arts & Crafts' %}selected{% endif %}>Arts & Crafts</option>
+                                        <option value="Beauty & Personal Care" {% if user.business_data.category == 'Beauty & Personal Care' %}selected{% endif %}>Beauty & Personal Care</option>
+                                        <option value="Clothing & Fashion" {% if user.business_data.category == 'Clothing & Fashion' %}selected{% endif %}>Clothing & Fashion</option>
+                                        <option value="Education & Training" {% if user.business_data.category == 'Education & Training' %}selected{% endif %}>Education & Training</option>
+                                        <option value="Food & Beverage" {% if user.business_data.category == 'Food & Beverage' %}selected{% endif %}>Food & Beverage</option>
+                                        <option value="Health & Wellness" {% if user.business_data.category == 'Health & Wellness' %}selected{% endif %}>Health & Wellness</option>
+                                        <option value="Home Decor & Furniture" {% if user.business_data.category == 'Home Decor & Furniture' %}selected{% endif %}>Home Decor & Furniture</option>
+                                        <option value="Professional Services" {% if user.business_data.category == 'Professional Services' %}selected{% endif %}>Professional Services</option>
+                                        <option value="Technology" {% if user.business_data.category == 'Technology' %}selected{% endif %}>Technology</option>
+                                        <option value="Other" {% if user.business_data.category == 'Other' %}selected{% endif %}>Other</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="business_location" class="form-label">Business Location</label>
+                                    <input type="text" class="form-control" id="business_location" name="business_location" value="{{ user.business_data.location or '' }}" placeholder="City, State, Country">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="business_website" class="form-label">Business Website</label>
+                                    <input type="url" class="form-control" id="business_website" name="business_website" value="{{ user.business_data.website or '' }}" placeholder="https://example.com">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="business_phone" class="form-label">Business Phone</label>
+                                    <input type="tel" class="form-control" id="business_phone" name="business_phone" value="{{ user.business_data.phone or '' }}" placeholder="+1 (555) 123-4567">
+                                </div>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Tab -->
+                <div class="tab-pane fade" id="security">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-transparent border-0">
+                            <h3 class="card-title mb-0">Security & Password</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <h5>Password Reset</h5>
+                                <p class="text-muted">If you need to reset your password, click the button below and follow the instructions sent to your email.</p>
+                                <button id="reset-password" class="btn btn-outline-primary" data-email="{{ user.email }}">
+                                    <i class="fas fa-key me-2"></i> Reset Password
+                                </button>
+                            </div>
+                            <hr>
+                            <div class="mb-4">
+                                <h5>Two-Factor Authentication</h5>
+                                <p class="text-muted">Enhance your account security by enabling two-factor authentication.</p>
+                                <button class="btn btn-outline-primary" disabled>
+                                    <i class="fas fa-lock me-2"></i> Enable 2FA
+                                    <small class="ms-2 badge bg-secondary">Coming Soon</small>
+                                </button>
+                            </div>
+                            <hr>
+                            <div>
+                                <h5>Account Deletion</h5>
+                                <p class="text-muted">Once you delete your account, there is no going back. Please be certain.</p>
+                                <button class="btn btn-outline-danger">
+                                    <i class="fas fa-trash-alt me-2"></i> Delete Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/auth.js"></script>
+{% endblock %}

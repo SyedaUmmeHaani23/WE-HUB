@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+
+{% block title %}Community Forum - WE Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-3">Community Forum</h1>
+            <p class="lead">Connect with fellow women entrepreneurs, share knowledge, and seek advice.</p>
+        </div>
+        <div class="col-md-4 d-flex align-items-center justify-content-md-end">
+            {% if current_user.is_authenticated %}
+            <a href="/community/forum/create" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-1"></i> Create New Post
+            </a>
+            {% else %}
+            <a href="/auth/login" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt me-1"></i> Login to Participate
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Search and Filter -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search discussions..." id="forum-search">
+                                <button class="btn btn-outline-secondary" type="button">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" id="category-filter">
+                                <option value="">All Categories</option>
+                                <option value="Business Tips">Business Tips</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Funding">Funding</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Work-Life Balance">Work-Life Balance</option>
+                                <option value="General Discussion">General Discussion</option>
+                                <option value="Questions">Questions</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Forum Posts -->
+            {% if posts %}
+                {% for post in posts %}
+                <div class="card forum-card border-0 shadow-sm post-item" data-category="{{ post.category }}">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            {% if post.author.photo_url %}
+                            <img src="{{ post.author.photo_url }}" class="rounded-circle me-3" width="40" height="40" alt="Author avatar">
+                            {% else %}
+                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <h6 class="mb-0">{{ post.author.display_name }}</h6>
+                                <span class="forum-author">
+                                    {% if post.author.business_name %}
+                                    {{ post.author.business_name }} ·
+                                    {% endif %}
+                                    {% if post.created_at %}
+                                    {{ post.created_at.strftime('%b %d, %Y') if post.created_at is not string else 'Recently' }}
+                                    {% else %}
+                                    Recently
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <h5 class="card-title">
+                            <a href="/community/forum/post/{{ post.id }}" class="text-decoration-none text-reset">{{ post.title }}</a>
+                        </h5>
+                        
+                        <p class="card-text">{{ post.content[:150] }}{% if post.content|length > 150 %}...{% endif %}</p>
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                {% if post.category %}
+                                <span class="forum-category">{{ post.category }}</span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <span class="me-3"><i class="fas fa-comment me-1"></i> {{ post.comments|length }}</span>
+                                <a href="/community/forum/post/{{ post.id }}" class="btn btn-sm btn-outline-primary">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-comments fa-4x mb-3 text-muted"></i>
+                        <h3>No Discussions Yet</h3>
+                        <p class="text-muted mb-4">Be the first to start a discussion in our community forum!</p>
+                        {% if current_user.is_authenticated %}
+                        <a href="/community/forum/create" class="btn btn-primary">
+                            <i class="fas fa-plus-circle me-1"></i> Create New Post
+                        </a>
+                        {% else %}
+                        <a href="/auth/login" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-1"></i> Login to Participate
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Pagination -->
+            {% if posts and posts|length > 10 %}
+            <nav aria-label="Forum pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Popular Categories -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Popular Categories</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="#" class="badge bg-primary text-decoration-none">Business Tips</a>
+                        <a href="#" class="badge bg-primary text-decoration-none">Marketing</a>
+                        <a href="#" class="badge bg-primary text-decoration-none">Funding</a>
+                        <a href="#" class="badge bg-primary text-decoration-none">Technology</a>
+                        <a href="#" class="badge bg-primary text-decoration-none">Work-Life Balance</a>
+                        <a href="#" class="badge bg-primary text-decoration-none">General Discussion</a>
+                        <a href="#" class="badge bg-primary text-decoration-none">Questions</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Forum Guidelines -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Forum Guidelines</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Be respectful and supportive of other members</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Share knowledge and experiences freely</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Ask questions and provide thoughtful answers</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Keep discussions relevant to women entrepreneurs</li>
+                        <li class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i> No spam, excessive self-promotion, or harassment</li>
+                        <li><i class="fas fa-times-circle text-danger me-2"></i> Do not share sensitive personal information</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Upcoming Events -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Upcoming Events</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="event-date me-3">
+                            <div class="event-day">15</div>
+                            <div class="event-month">May</div>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Digital Marketing Workshop</h6>
+                            <small class="text-muted">Virtual • 2:00 PM</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="event-date me-3">
+                            <div class="event-day">22</div>
+                            <div class="event-month">May</div>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Networking Mixer</h6>
+                            <small class="text-muted">Virtual • 6:30 PM</small>
+                        </div>
+                    </div>
+                    <div class="mt-3 text-center">
+                        <a href="/community/events" class="btn btn-sm btn-outline-primary">View All Events</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/community.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const forumSearch = document.getElementById('forum-search');
+        const categoryFilter = document.getElementById('category-filter');
+        const postItems = document.querySelectorAll('.post-item');
+        
+        // Search functionality
+        forumSearch.addEventListener('input', filterPosts);
+        
+        // Category filter
+        categoryFilter.addEventListener('change', filterPosts);
+        
+        function filterPosts() {
+            const searchTerm = forumSearch.value.toLowerCase();
+            const category = categoryFilter.value;
+            
+            postItems.forEach(item => {
+                const title = item.querySelector('.card-title').textContent.toLowerCase();
+                const content = item.querySelector('.card-text').textContent.toLowerCase();
+                const itemCategory = item.dataset.category;
+                
+                const matchesSearch = title.includes(searchTerm) || content.includes(searchTerm);
+                const matchesCategory = category === '' || itemCategory === category;
+                
+                if (matchesSearch && matchesCategory) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

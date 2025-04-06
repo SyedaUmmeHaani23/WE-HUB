@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - WE Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
+            {% if product.category %}
+            <li class="breadcrumb-item"><a href="/shop?category={{ product.category }}">{{ product.category }}</a></li>
+            {% endif %}
+            <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card border-0">
+                <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% if product.images|length > 0 %}
+                            {% for image in product.images %}
+                            <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
+                                <img src="{{ image }}" class="d-block w-100 rounded" alt="{{ product.name }}" style="height: 400px; object-fit: contain;">
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="carousel-item active">
+                                <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height: 400px;">
+                                    <i class="fas fa-image fa-4x text-muted"></i>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% if product.images|length > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    {% endif %}
+                </div>
+                
+                <!-- Thumbnail Navigation -->
+                {% if product.images|length > 1 %}
+                <div class="d-flex flex-wrap justify-content-center mt-3">
+                    {% for image in product.images %}
+                    <div class="mx-1 mb-2" style="width: 60px; height: 60px;">
+                        <img src="{{ image }}" class="img-thumbnail w-100 h-100" alt="Thumbnail" 
+                             style="object-fit: cover; cursor: pointer;"
+                             data-bs-target="#productCarousel" data-bs-slide-to="{{ loop.index0 }}">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <h1 class="mb-3">{{ product.name }}</h1>
+            
+            <div class="d-flex align-items-center mb-3">
+                <h2 class="product-price me-3">${{ product.price }}</h2>
+                {% if product.in_stock %}
+                <span class="badge bg-success">In Stock</span>
+                {% else %}
+                <span class="badge bg-danger">Out of Stock</span>
+                {% endif %}
+            </div>
+            
+            <p class="mb-4">{{ product.description }}</p>
+            
+            {% if product.category %}
+            <div class="mb-3">
+                <strong>Category:</strong> 
+                <a href="/shop?category={{ product.category }}" class="text-decoration-none">{{ product.category }}</a>
+            </div>
+            {% endif %}
+            
+            {% if product.in_stock %}
+            <div class="d-grid gap-2 mb-4">
+                <button class="btn btn-primary add-to-cart"
+                        data-product-id="{{ product.id }}" 
+                        data-product-name="{{ product.name }}" 
+                        data-product-price="{{ product.price }}"
+                        data-product-image="{{ product.images[0] if product.images|length > 0 else '' }}">
+                    <i class="fas fa-cart-plus me-2"></i> Add to Cart
+                </button>
+                <button class="btn btn-success google-pay-button"
+                        data-product-id="{{ product.id }}"
+                        data-product-name="{{ product.name }}"
+                        data-product-price="{{ product.price }}">
+                    <i class="fab fa-google-pay me-2"></i> Buy with Google Pay
+                </button>
+            </div>
+            {% endif %}
+            
+            <!-- Seller Information -->
+            {% if seller %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">About the Seller</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        {% if seller.photo %}
+                        <img src="{{ seller.photo }}" alt="{{ seller.name }}" class="rounded-circle me-3" width="50" height="50">
+                        {% else %}
+                        <i class="fas fa-user-circle fa-3x me-3 text-muted"></i>
+                        {% endif %}
+                        <div>
+                            <h6 class="mb-0">{{ seller.name }}</h6>
+                            {% if seller.business and seller.business.location %}
+                            <small class="text-muted">
+                                <i class="fas fa-map-marker-alt me-1"></i> {{ seller.business.location }}
+                            </small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if seller.business and seller.business.description %}
+                    <p class="small">{{ seller.business.description }}</p>
+                    {% endif %}
+                    <a href="#" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-store me-1"></i> View Seller's Profile
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Shipping & Returns -->
+            <div class="accordion" id="productAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingShipping">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseShipping" aria-expanded="false" aria-controls="collapseShipping">
+                            <i class="fas fa-truck me-2"></i> Shipping Information
+                        </button>
+                    </h2>
+                    <div id="collapseShipping" class="accordion-collapse collapse" aria-labelledby="headingShipping" data-bs-parent="#productAccordion">
+                        <div class="accordion-body">
+                            <p class="mb-0">Standard shipping usually takes 3-5 business days. Contact the seller for expedited shipping options.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingReturns">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseReturns" aria-expanded="false" aria-controls="collapseReturns">
+                            <i class="fas fa-undo me-2"></i> Returns & Refunds
+                        </button>
+                    </h2>
+                    <div id="collapseReturns" class="accordion-collapse collapse" aria-labelledby="headingReturns" data-bs-parent="#productAccordion">
+                        <div class="accordion-body">
+                            <p class="mb-0">Returns accepted within 30 days. Please contact the seller directly to arrange a return.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related Products -->
+    <div class="mt-5">
+        <h3 class="mb-4">You May Also Like</h3>
+        <div class="row g-4">
+            {% for i in range(4) %}
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 product-card">
+                    <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
+                        <i class="fas fa-image fa-3x text-muted"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Related Product</h5>
+                        <p class="product-price">$XX.XX</p>
+                        <p class="card-text text-muted">This is a placeholder for a related product.</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a href="#" class="btn btn-outline-primary d-block">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize product thumbnails
+        const thumbnails = document.querySelectorAll('.img-thumbnail');
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function() {
+                const slideIndex = this.getAttribute('data-bs-slide-to');
+                const carousel = document.getElementById('productCarousel');
+                const bsCarousel = new bootstrap.Carousel(carousel);
+                bsCarousel.to(parseInt(slideIndex));
+            });
+        });
+    });
+</script>
+{% endblock %}
