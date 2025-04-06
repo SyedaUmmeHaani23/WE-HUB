@@ -29,37 +29,6 @@
          data-app-id="{{ firebase_app_id }}"
          style="display: none;"></div>
     
-    <!-- Firebase SDK -->
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-        
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: document.getElementById('firebase-config').getAttribute('data-api-key'),
-            projectId: document.getElementById('firebase-config').getAttribute('data-project-id'),
-            appId: document.getElementById('firebase-config').getAttribute('data-app-id'),
-            authDomain: `${document.getElementById('firebase-config').getAttribute('data-project-id')}.firebaseapp.com`,
-            storageBucket: `${document.getElementById('firebase-config').getAttribute('data-project-id')}.appspot.com`,
-        };
-        
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        
-        // Check authentication state
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is signed in
-                console.log("User is signed in");
-            } else {
-                // User is signed out
-                console.log("User is signed out");
-            }
-        });
-    </script>
-    
     {% block extra_head %}{% endblock %}
 </head>
 <body>
